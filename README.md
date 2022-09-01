@@ -5,11 +5,8 @@ Example:
 paste this into terminal after ./a.out
 
 NT S
-
 NT T
-
 NT E
-
 T (
 
 T )
