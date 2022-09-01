@@ -1,30 +1,9 @@
 # parsing_stuff
 
 Try it out: type g++ lr1.cpp on your terminal, then enter a grammar. 
-Example:
-paste this into terminal after ./a.out
+Run Example:
 
-NT S
-NT T
-NT E
-T (
+g++ lr1.cpp
 
-T )
+./a.out examples/simple.txt
 
-T +
-
-T *
-
-T int
-
-END
-
-S -> E
-
-E -> T + E | T
-
-T -> int * T | int | ( E )
-
-END
-
-S

@@ -14,6 +14,9 @@ struct symbol{
 
 vector<string> map_symbol;
 
+bool file_given = false;
+ifstream inputstream;
+
 struct rule {
   int id;
   symbol lhs;
@@ -223,7 +226,10 @@ void input_declaration (){
   cout << "enter declaration, (format NT name | T name | END)" << endl;
   while (true){
     string s;
-    getline(cin, s);
+    if (file_given)
+      getline(inputstream, s);
+    else
+      getline(cin, s);
     if (s == "END"){
       break;
     }
@@ -257,7 +263,10 @@ void input_declaration (){
 
 bool input_single_rule (){
   string s;
-  getline(cin, s);
+  if (file_given)
+    getline(inputstream, s);
+  else
+    getline(cin, s);
   if (s == "END"){
     return false;
   }
@@ -307,7 +316,10 @@ void input_rules (){
   while (input_single_rule());
   cout << "Enter the starting Non-terminal name" << endl;
   string s;
-  cin >> s;
+  if (file_given)
+    inputstream >> s;
+  else
+    cin >> s;
   if (symbol_map.find(s) == symbol_map.end() || is_terminal[symbol_map[s].id]){
     throw ("start symbol not a non-terminal");
   }
@@ -495,8 +507,12 @@ map<pair<int, symbol>, int> get_all_transitions (set<lr1_state> & all_states){
   return trans;
 }
 
-int main (){
+int main (int argc, char *argv[]){
   try {
+    if (argc > 1){
+      file_given = true;
+      inputstream.open(argv[1]);
+    }
     input_declaration();
     input_rules();
     cout << "nullable" << endl;
@@ -526,20 +542,3 @@ int main (){
     cout << err << endl;
   }  
 }
-/*
-NT S
-NT T
-NT E
-T (
-T )
-T +
-T *
-T int
-END
-S -> E
-E -> T + E | T
-T -> int * T | int | ( E )
-END
-S
-
-*/
