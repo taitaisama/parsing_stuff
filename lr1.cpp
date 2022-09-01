@@ -61,6 +61,9 @@ struct lr1_item {
     }
     return {-1};
   }
+  bool is_reduction () const {
+    return (pointer == rules[rule_num].rhs.size());
+  }
 };
 
 struct lr1_state {
@@ -82,6 +85,17 @@ struct lr1_state {
       }
       cout << endl;
     }
+  }
+  vector<pair<int, symbol>> get_reductions () const {
+    vector<pair<int, symbol>> reds;
+    for (auto & [lri, ss]: lr1_items){
+      if (lri.is_reduction()){
+	for (auto symb: ss){
+	  reds.push_back({lri.rule_num, symb});
+	}
+      }
+    }
+    return reds;
   }
   map<symbol, lr1_state> get_transitions () const {
     // already expanded
@@ -507,6 +521,72 @@ map<pair<int, symbol>, int> get_all_transitions (set<lr1_state> & all_states){
   return trans;
 }
 
+enum type {
+  shift = 0,
+  reduc = 1,
+  go_to = 2,
+  err = 3
+};
+
+void write_transition_table (map<pair<int, symbol>, int> & trans, set<lr1_state> & all_states){
+  int nstates = all_states.size();
+  vector<vector<pair<int, type>>> table(nstates, vector<pair<int, type>>(is_terminal.size(), {0, err}));
+  for (int state = 0; state < nstates; state ++){
+    for (int sym = 0; sym < is_terminal.size(); sym ++){
+      if (trans.find({state, {sym}}) != trans.end()){
+	if (is_terminal[sym])
+	  table[state][sym] = {trans[{state, {sym}}], shift};
+	else
+	  table[state][sym] = {trans[{state, {sym}}], go_to};
+      }
+    }
+  }
+  for (auto st: all_states){
+    vector<pair<int, symbol>> reds = st.get_reductions(); // rule number and symbol
+    for (auto [rule_num, sym]: reds) {
+      if (table[st.state_num][sym.id].second != err){
+	if (table[st.state_num][sym.id].second == shift){
+	  cout << "LR(1) incompatible grammer, shift reduce conflict in state " + to_string(st.state_num) + " for symbol " + map_symbol[sym.id] << endl;
+	}
+	else {
+	  cout << "LR(1) incompatible grammer, reduce reduce conflict in state " + to_string(st.state_num) + " for symbol " + map_symbol[sym.id] << endl;
+	}
+      }
+      table[st.state_num][sym.id] = {rule_num, reduc};
+    }
+  }
+  vector<int> reorder;
+  for (int i = 0; i < is_terminal.size(); i ++){
+    reorder.push_back(i);
+  }
+  sort(reorder.begin(), reorder.end(), [](int a, int b) { return is_terminal[a] > is_terminal[b]; });
+  reorder = {8, 7, 6, 5, 3, 4, 0, 2, 1};
+  cout << "\\diagbox{state}{token} ";
+  for (int sym = 0; sym < is_terminal.size(); sym ++){
+    cout << " & " <<  map_symbol[reorder[sym]];
+  }
+  cout << "\\\\\n\\hline\n";
+  for (int state = 0; state < nstates; state ++){
+    cout << state;
+    for (int sym = 0; sym < is_terminal.size(); sym ++){
+      if (table[state][reorder[sym]].second == err){
+	cout << " & ";
+      }
+      else if (table[state][reorder[sym]].second == reduc){
+	cout << " & $r_{" << table[state][reorder[sym]].first << "}$";
+      }
+      else if (table[state][reorder[sym]].second == shift){
+	cout << " & $s_{" << table[state][reorder[sym]].first << "}$";
+      }
+      else {	
+	cout << " & $" << table[state][reorder[sym]].first << "$";
+      }
+    }
+    cout << "\\\\\n\\hline\n";
+  }
+  cout << endl;
+}
+
 int main (int argc, char *argv[]){
   try {
     if (argc > 1){
@@ -537,6 +617,7 @@ int main (int argc, char *argv[]){
       auto& [st, sym] = stsym;
       cout << st << ", " << map_symbol[sym.id] << " => " << nst << endl;
     }
+    write_transition_table(trans, all_states);
   }
   catch (char const * err){
     cout << err << endl;
