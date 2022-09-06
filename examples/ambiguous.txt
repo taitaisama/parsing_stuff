@@ -1,0 +1,9 @@
+NT S
+NT S'
+T +
+T int
+END
+S' -> S
+S -> S + S | int
+END
+S'

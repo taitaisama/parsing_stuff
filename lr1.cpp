@@ -585,7 +585,7 @@ void write_transition_table (vector<vector<pair<int, type>>> & table){
     reorder.push_back(i);
   }
   sort(reorder.begin(), reorder.end(), [](int a, int b) { return is_terminal[a] > is_terminal[b]; });
-  reorder = {8, 7, 5, 6, 3, 4, 0, 2, 1};
+  // reorder = {8, 7, 5, 6, 3, 4, 0, 2, 1};
   cout << "\\hline\n";
   cout << "\\diagbox{state}{token} ";
   for (int sym = 0; sym < is_terminal.size(); sym ++){
@@ -766,23 +766,26 @@ int main (int argc, char *argv[]){
     write_transition_table(new_table);
     auto reduced_table = table_remove(new_table);
     write_transition_table(reduced_table);
-    vector<int> sm(11, 0);
-    sm[4] = 1;
-    sm[3] = 2;
-    sm[2] = 3;
-    sm[1] = 4;
-    sm[5] = 7;
-    sm[6] = 6;
-    sm[7] = 5;
-    sm[8] = 10;
-    sm[9] = 9;
-    sm[10] = 8;
-    sm[0] = 0;
+    // vector<int> sm(11, 0);
+    // sm[4] = 1;
+    // sm[3] = 2;
+    // sm[2] = 3;
+    // sm[1] = 4;
+    // sm[5] = 7;
+    // sm[6] = 6;
+    // sm[7] = 5;
+    // sm[8] = 10;
+    // sm[9] = 9;
+    // sm[10] = 8;
+    // sm[0] = 0;
     // cout << reduced_table.size() << endl;
-    auto final_table = reorder_states(reduced_table, sm);
-    write_transition_table(final_table);
+    // auto final_table = reorder_states(reduced_table, sm);
+    // write_transition_table(final_table);
   }
   catch (string err){
+    cout << err << endl;
+  }
+  catch (char const * err){
     cout << err << endl;
   }
 }

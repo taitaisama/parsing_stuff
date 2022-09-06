@@ -1,0 +1,9 @@
+NT S
+NT A
+T a
+T b
+END
+S -> A A
+A -> a A | b
+END
+S
