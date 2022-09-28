@@ -1,8 +1,8 @@
 bison: bison.cpp bison.tab.cpp bison.lex.cpp
-	g++ bison.tab.cpp bison.lex.cpp bison.cpp -lm -ll -lfl -o $@
+	g++ -g bison_ast.cpp bison.tab.cpp bison.lex.cpp bison.cpp  -I.
 
 bison.tab.cpp bison.tab.hpp: bison.y
-	bison -o bison.tab.cpp -d bison.y
+	bison -o bison.tab.cpp -v -d bison.y
 
 bison.lex.cpp: bison.l bison.tab.hpp
 	flex -o bison.lex.cpp -l bison.l

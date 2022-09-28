@@ -1,7 +1,4 @@
-
 %token TERMINAL_DECL START TERMINAL NON_TERMINAL CHARACTER DELIMITER
-
-%start bison_prog
 
 %%
 

@@ -5,6 +5,7 @@ WS  [ \t\v\n\f]
 ES  (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 %{
 #include <stdio.h>
+#include "bison_ast.h"
 #include "bison.tab.hpp"
 
 extern void yyerror(const char *);
@@ -18,10 +19,9 @@ static void comment(void);
 "/*"                        { comment(); }
 "//".*                      {}
 "%token"                    { return(TERMINAL_DECL); }
-"%start"                    { return(START); }
-{C}*                        { set_var(yytext); return(TERMINAL); }
-{S}*                        { set_var(yytext); return(NON_TERMINAL); }
-"'"([^'\\\n]|{ES})+"'"      { set_var(yytext); return(CHARACTER); }
+{C}*                        { yylval.strval = tostrval(yytext); return(TERMINAL); }
+{S}*                        { yylval.strval = tostrval(yytext); return(NON_TERMINAL); }
+"'"([^'\\\n]|{ES})+"'"      { yylval.strval = tostrval(yytext); return(CHARACTER); }
 ":"                         { return(':'); }
 "|"                         { return('|'); }
 ";"                         { return(';'); }
