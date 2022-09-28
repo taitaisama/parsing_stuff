@@ -82,7 +82,7 @@ choose_option:
 	cout << "more than one reduction, cannot make normal form" << endl;
 	goto choose_option;
       }
-      cout << "constructed struct: " << endl;
+      cout << "struct: " << endl;
       string con_struct_ed = "";
       con_struct_ed += "struct S_" + nt + " {\n";
       auto& v = rule->reductions->reds[*chosen_reds.begin()];
@@ -100,7 +100,8 @@ choose_option:
       // con_struct_ed += "\tvoid print_fancy(int tab);\n";
       con_struct_ed += "};\n";
       cout << con_struct_ed << endl;
-      cout << "constructed functions: " << endl;
+      cout << "functions: " << endl;
+
       string constructor = "";
       constructor += "S_" + nt + "::" + constructor_decl + " {\n";
       for (int i = 0; i < v->non_terminals_values.size(); i ++) {
@@ -143,7 +144,7 @@ choose_option:
     }
     else if (op == "e") {
       
-      cout << "enter enum names for each chosen reduction:" << endl;
+      cout << "enter enum names for each chosen reduction (make it ALL CAPS)" << endl;
       vector<string> enums;
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
@@ -167,7 +168,7 @@ choose_option:
 	all_types[num] = ty;
       }
 
-      cout << "constructed struct: " << endl;
+      cout << "struct: " << endl;
       string con_struct_ed = "struct S_" + nt + " {\n";
       con_struct_ed += "\tenum {";
       int id = 0;
@@ -190,8 +191,161 @@ choose_option:
 
       cout << con_struct_ed;
       
-    }
-    else if (op == "u"){
+      cout << "functions:" << endl;
+      string constructor = "S_" + nt + "::" + constructor_decl + "{\n";
+
+      for (int i = 0; i < all_types.size(); i ++) {
+	constructor += "\tv" + to_string(i) + " = " + "a" + to_string(i) + ";\n";
+      }
+      constructor += "\tkind = enum_kind;\n";
+      constructor += "}\n";
+      cout << constructor << endl;
+      
+      string printer = "void S_" + nt + "::print(int tab) {\n";
+      printer += "\tprint_tab(tab);\n";
+      printer += "\tcout << \"+" + nt + " type: \" << kind << endl;\n";
+      for (int i = 0; i < all_types.size(); i ++) {
+	printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
+      }
+      printer += "}\n";
+      
+      cout << printer << endl;
+      
+      cout << "bison reduction actions:" << endl;
+      
+      string red_act = nt + "\n";
+      
+      for (int i = 0; i < rule->reductions->reds.size(); i ++){
+	if (i == 0) red_act +=  "        : ";
+	else red_act += "        | ";
+	red_act += rule->reductions->reds[i]->toString();
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	else {
+	  red_act += " { $$ = new S_" + nt + "(";
+	  for (auto ntp: all_types) {
+	    int x = rule->reductions->reds[i]->findIdx(ntp);
+	    if (x == -1) {
+	      red_act += "NULL, ";
+	    }
+	    else {
+	      red_act += "$" + to_string(x) + ", ";
+	    }
+	  }
+	  red_act += to_string(i) + "); }\n";
+	}
+      }
+      red_act += "        ;\n";
+      
+      cout << red_act << endl;
+      
+    }   
+    else if (op == "u"){   // could have implemented this by inheriting everything with a AST_node class, but that means dynamic type checking and casts, virtual tables and other shit. If I am maintaining an enum anyways then it is better to implement a union instead (will also be compatible with C with minor changes as a bonus)
+      
+      cout << "enter enum names for each chosen reduction (make it ALL CAPS)" << endl;
+      vector<string> enums;
+      for (int cr: chosen_reds) {
+	rule->reductions->reds[cr]->print_pretty();
+	string en;
+	cin >> en;
+	enums.push_back(en);
+	// for (auto s: rule->reductions->reds[cr]->non_terminals_values) {
+	//   cout << "union for token: " << s << endl;
+	//   int x;
+	//   cin >> x;
+	//   union_members[x].insert(
+	// }
+      }
+
+      cout << "struct: " << endl;
+      string con_struct_ed = "struct S_" + nt + " {\n";
+      con_struct_ed += "\tenum {";
+      int id = 0;
+      for (string e: enums) {
+	con_struct_ed += e + " = " + to_string(id) + ", ";
+	id ++;
+      }
+      con_struct_ed += "} kind;\n";
+      con_struct_ed += "\tunion {\n";
+      int count = 0;
+      for (int cr: chosen_reds) { 
+	if (rule->reductions->reds[cr]->non_terminals_values.size() == 0) {
+	  count ++;
+	  continue;
+	}
+	con_struct_ed += "\t\tstruct { ";
+	int i = 0;
+	for (auto s: rule->reductions->reds[cr]->non_terminals_values) {
+	  con_struct_ed += s + " v" + to_string(i) + "; ";
+	  i++;
+	}
+	con_struct_ed += "} ";
+	string temp = enums[count];
+	transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+	con_struct_ed += temp + ";\n";
+	count ++;
+      }
+      con_struct_ed += "};\n";
+      
+      // multiple constructors
+      // maybe store vector of strings and then see from that
+      // yeah should work
+      string constructor_decl = "S_" + nt + "(";
+      for (int num = 0; num < all_types.size(); num ++) {
+	constructor_decl += "T_" + all_types[num] + " a" + to_string(num);
+	constructor_decl += ", ";
+      }
+      constructor_decl += "int enum_kind)";
+      con_struct_ed += "\t" + constructor_decl + ";\n";
+      con_struct_ed += "\tvoid print(int tab);\n};\n";
+
+      cout << con_struct_ed;
+      
+      cout << "functions:" << endl;
+      string constructor = "S_" + nt + "::" + constructor_decl + "{\n";
+
+      for (int i = 0; i < all_types.size(); i ++) {
+	constructor += "\tv" + to_string(i) + " = " + "a" + to_string(i) + ";\n";
+      }
+      constructor += "\tkind = enum_kind;\n";
+      constructor += "}\n";
+      cout << constructor << endl;
+      
+      string printer = "void S_" + nt + "::print(int tab) {\n";
+      printer += "\tprint_tab(tab);\n";
+      printer += "\tcout << \"+" + nt + " type: \" << kind << endl;\n";
+      for (int i = 0; i < all_types.size(); i ++) {
+	printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
+      }
+      printer += "}\n";
+      
+      cout << printer << endl;
+      
+      cout << "bison reduction actions:" << endl;
+      
+      string red_act = nt + "\n";
+      
+      for (int i = 0; i < rule->reductions->reds.size(); i ++){
+	if (i == 0) red_act +=  "        : ";
+	else red_act += "        | ";
+	red_act += rule->reductions->reds[i]->toString();
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	else {
+	  red_act += " { $$ = new S_" + nt + "(";
+	  for (auto ntp: all_types) {
+	    int x = rule->reductions->reds[i]->findIdx(ntp);
+	    if (x == -1) {
+	      red_act += "NULL, ";
+	    }
+	    else {
+	      red_act += "$" + to_string(x) + ", ";
+	    }
+	  }
+	  red_act += to_string(i) + "); }\n";
+	}
+      }
+      red_act += "        ;\n";
+      
+      cout << red_act << endl;
       
     }
     else if (op == "l") {

@@ -23,6 +23,7 @@ struct S_reduction {
   void print(int tab);
   void print_pretty();
   string toString();
+  int findIdx (string nt);
 };
 
 struct S_reduction_list {

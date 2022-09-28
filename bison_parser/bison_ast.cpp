@@ -27,6 +27,15 @@ void S_reduction::add (string str){
   }
 }
 
+int S_reduction::findIdx (string nt) {
+  for (int i = 0; i < non_terminals_values.size(); i ++){
+    if (non_terminals_values[i] == nt) {
+      return non_terminal_pos[i];
+    }
+  }
+  return -1;
+}
+
 S_reduction::S_reduction (){
   values = vector<string>();
 }
