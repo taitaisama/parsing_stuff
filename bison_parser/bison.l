@@ -26,6 +26,7 @@ static void comment(void);
 "|"                         { return('|'); }
 ";"                         { return(';'); }
 "%%"                        { return(DELIMITER); }					  
+"<"{ES}+">"                 { return(TYPE); }
 {WS}+	                    {}
 .                           {}
 %%

@@ -10,14 +10,19 @@ typedef struct S_token_decl* T_token_decl;
 typedef struct S_token_decl_list* T_token_decl_list;
 typedef struct S_prog* T_prog;
 
-void print(int tab, string str, const string extra);
+void print(int tab, string str, string extra);
 void print(int tab, string str);
+bool hasValue(string s);
 
 struct S_reduction {
   vector<string> values;
+  vector<string> non_terminals_values;
+  vector<int> non_terminal_pos;
   void add (string str);
   S_reduction ();
   void print(int tab);
+  void print_pretty();
+  string toString();
 };
 
 struct S_reduction_list {
@@ -25,12 +30,14 @@ struct S_reduction_list {
   S_reduction_list();
   void add (T_reduction red);
   void print(int tab);
+  void print_pretty();
 };
 
 struct S_rule {
   T_reduction_list reductions;
   string product;
   void print(int tab);
+  void print_pretty();
 };
 
 struct S_rule_list {
@@ -49,6 +56,7 @@ struct S_terminal_list {
 
 struct S_token_decl {
   T_terminal_list tl;
+  string type = "";
   void print(int tab);
 };
 
@@ -65,6 +73,8 @@ struct S_prog {
   void print();
 };
 
+extern map<string, T_rule> non_terminals;
+extern map<string, string> token_types;
 
 T_terminal_list T_create_terminal_list(char* t);
 
@@ -93,6 +103,8 @@ T_rule_list T_create_rule_list(T_rule rule);
 T_rule_list T_add_to_rule_list(T_rule_list r, T_rule rule);
 
 T_token_decl T_create_token_decl(T_terminal_list tl);
+
+T_token_decl T_create_token_decl(char* type, T_terminal_list tl);
 
 T_token_decl_list T_create_token_decl_list(T_token_decl td);
 

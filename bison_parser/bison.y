@@ -16,7 +16,7 @@ T_prog prog_ast;
 %}
 
 %token TERMINAL_DECL
-%token <strval> TERMINAL NON_TERMINAL CHARACTER
+%token <strval> TERMINAL NON_TERMINAL CHARACTER TYPE
 %token DELIMITER
 
 %start bison_prog
@@ -54,7 +54,8 @@ token_decl_list
         ;
 
 token_decl
-        : TERMINAL_DECL terminal_list { $$ = T_create_token_decl($2); }
+        : TERMINAL_DECL terminal_list      { $$ = T_create_token_decl($2); }
+        | TERMINAL_DECL TYPE terminal_list { $$ = T_create_token_decl($2, $3); }
 	;
 
 terminal_list
