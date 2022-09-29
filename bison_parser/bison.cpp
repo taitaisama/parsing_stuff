@@ -12,6 +12,7 @@ extern "C" FILE *yyin;
 extern T_prog prog_ast;
 
 map<string, T_rule> non_terminals;
+map<string, int> nt_order;
 map<string, string> token_types;
 int indent = 85;
 // ofstream struct_names{"struct_names.h"};
@@ -21,7 +22,7 @@ int indent = 85;
 ofstream ast_header{"ast.h"};
 ofstream ast_cpp{"ast.cpp"};
 ofstream bison_file{"reductions.y"};
-ifstream inputs{"inputs.txt"};
+ofstream inputs{"inputs.txt"};
 
 
 struct nt_features {
@@ -33,7 +34,7 @@ struct nt_features {
 string takeInputTillEnd() {
   string line;
   string func = "";
-  while (getline(inputs, line)) {
+  while (getline(cin, line)) {
     if (line == "end") {
       break;
     }
@@ -55,8 +56,8 @@ void create_ast () {
     cout << endl;
     cout << "enter non-terminal name to evaluate, 0 to exit, 1 to list all non-terminals" << endl;
     string nt;
-    inputs >> nt;
-    // inputs << nt << endl;
+    cin >> nt;
+    inputs << nt << endl;
     
     if (nt == "0"){
       break;
@@ -81,8 +82,8 @@ void create_ast () {
       cout << "Do you want to include the following reduction? enter y/n" << endl;
       r->print_pretty();
       string ch;
-      inputs >> ch;
-      // inputs << ch << endl;
+      cin >> ch;
+      inputs << ch << endl;
       if (ch == "y"){
 	chosen_reds.insert(i);
       }
@@ -104,8 +105,8 @@ choose_option:
 
     cout << "enter implementation style" << endl;
     cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nm for multiple with no enum (also uses default constructor, useful for empty list situations)\nu for union+enum\nl for list\nd for do it yourself" << endl;
-    inputs >> op;
-    // inputs << op << endl;
+    cin >> op;
+    inputs << op << endl;
     
     if (op == "n"){
       if (chosen_reds.size() > 1){
@@ -167,11 +168,15 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
 	else {
 	  red_act += " { $$ = new S_" + nt + "(";
+	  int nums = 0;
 	  for (auto ntp: rule->reductions->reds[i]->non_terminal_pos) {
-	    red_act += "$" + to_string(ntp) + ", ";
+	    red_act += "$" + to_string(ntp);
+	    nums ++;
+	    if (nums != rule->reductions->reds[i]->non_terminal_pos.size())
+	      red_act += ", ";
 	  }
 	  red_act += "); }\n";
 	}
@@ -187,8 +192,8 @@ choose_option:
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
-	inputs >> en;
-	// inputs << en << endl;
+	cin >> en;
+	inputs << en << endl;
 	enums.push_back(en);
       }
       
@@ -274,7 +279,7 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
 	else {
 	  red_act += " { $$ = new S_" + nt + "(";
 	  for (auto ntp: all_types) {
@@ -301,8 +306,8 @@ choose_option:
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
-	inputs >> en;
-	// inputs << en << endl;
+	cin >> en;
+	inputs << en << endl;
 	enums.push_back(en);
       }
 
@@ -436,7 +441,7 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
 	else {
 	  red_act += " { $$ = new S_" + nt + "(";
 	  auto & vei = constructor_map[rule->reductions->reds[i]->non_terminals_values];
@@ -524,7 +529,7 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
 	else {
 	  if (rule->reductions->reds[i]->non_terminals_values.size() == 1) {
 	    red_act += "{ $$ = new S_" + nt + "(); $$ = $$.add($1); }\n";
@@ -612,7 +617,7 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
 	else {
 	  red_act += " { $$ = new S_" + nt + "(";
 	  for (auto ntp: all_types) {
@@ -648,8 +653,8 @@ choose_option:
     }
 
     cout << "do you want to confirm these generated fucntions? y/n" << endl;
-    string yn; inputs >> yn;
-    // inputs << yn << endl;
+    string yn; cin >> yn;
+    inputs << yn << endl;
     if (yn == "y") {
       cout << "ok, writing functions to file" << endl;
       for (auto cr: chosen_reds) {
@@ -671,10 +676,25 @@ choose_option:
     
   }
   ast_header << "#include <bits/stdc++.h>\nusing namespace std;\n\n";
-  ast_header << "typedef int* T_int;\ntypedef string* T_str;\ntypedef float* T_float;\n";
+  ast_header << "typedef char* T_intval;\ntypedef char* T_strval;\ntypedef char* T_floatval;\n";
   ast_cpp << "#include \"ast.h\"\n\n";
   ast_header << "void print_tab(int tab);\n";
   ast_cpp << "void print_tab(int tab) {\n\tfor(int i = 0; i < tab; i ++) {\n\t\tcout << \"|\";\n\t}\n}\n";
+
+  
+  bison_file << "%union value {\n";
+  bison_file << "\tchar* strval;\n";
+  bison_file << "\tchar* intval;\n";
+  bison_file << "\tchar* floatval;\n";
+  for (auto& nt: done_nts) {
+    bison_file << "\tT_" + nt + " val_" + nt + ";\n";
+  }
+  bison_file << "};\n";
+  for (auto& nt: done_nts) {
+    bison_file << "%nterm <val_" + nt + "> " + nt + ";\n";
+  }
+  bison_file << endl;
+  
   for (auto &[n_t, ntf]: done_nt_features) {
     ast_header << "struct S_" + n_t + ";\n";
   }
@@ -684,9 +704,40 @@ choose_option:
   for (auto &[n_t, ntf]: done_nt_features) {
     ast_header << ntf.struct_definition;
     ast_cpp << ntf.functions;
-    bison_file << ntf.bison_actions;
   }
   
+  // bison_file << ntf.bison_actions;
+  cout << "not done: " << endl;
+  for (auto& [nt, rule]: non_terminals) {
+    if (done_nts.find(nt) == done_nts.end()) {
+      cout << nt << endl;
+    }
+    else continue;
+    string red_act = nt + "\n";
+    for (int i = 0; i < rule->reductions->reds.size(); i ++){
+      if (i == 0) red_act +=  "        : ";
+      else red_act += "        | ";
+      string redstring = rule->reductions->reds[i]->toString();
+      red_act += redstring;
+      for (int i = redstring.size(); i <= indent; i ++){
+	red_act += " ";
+      }
+      red_act += " { throw \"not implemented " + nt + "\"; } \n";
+    }
+    red_act += "        ;\n\n";
+    done_nt_features[nt] = {"", "", red_act};
+    // bison_file << red_act;
+  }
+
+  vector<pair<int, string>> ordered;
+  for (auto &[nt_s, nt_n]: nt_order) {
+    ordered.push_back({nt_n, nt_s});
+  }
+  sort(ordered.begin(), ordered.end());
+  for (auto &[nt_n, nt]: ordered) {
+    bison_file << done_nt_features[nt].bison_actions;
+  }
+  bison_file << endl;
 }
 
 int

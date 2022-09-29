@@ -75,6 +75,7 @@ struct S_prog {
 
 extern map<string, T_rule> non_terminals;
 extern map<string, string> token_types;
+extern map<string, int> nt_order;
 
 T_terminal_list T_create_terminal_list(char* t);
 

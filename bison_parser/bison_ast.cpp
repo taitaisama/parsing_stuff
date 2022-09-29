@@ -244,6 +244,7 @@ T_rule T_create_rule(char* nt, T_reduction_list redl){
     exit(0);
   }
   non_terminals[nt] = r;
+  nt_order[nt] = nt_order.size();
   return r;
 }
 
