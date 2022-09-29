@@ -203,7 +203,14 @@ choose_option:
       
       string printer = "void S_" + nt + "::print(int tab) {\n";
       printer += "\tprint_tab(tab);\n";
-      printer += "\tcout << \"+" + nt + " type: \" << kind << endl;\n";
+      printer += "\tcout << \"+" + nt + ";\n";
+      printer += "\tswitch(kind) {\n";
+      for (int i = 0; i < enums.size(); i ++) {
+	printer += "\tcase " + to_string(i) + ":\n";
+	printer += "\t\tcout << \" type: " + enums[i] + "\" << endl;\n";
+	printer += "\t\tbreak;\n";
+      }
+      printer += "\t}\n";
       for (int i = 0; i < all_types.size(); i ++) {
 	printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
       }
@@ -248,12 +255,6 @@ choose_option:
 	string en;
 	cin >> en;
 	enums.push_back(en);
-	// for (auto s: rule->reductions->reds[cr]->non_terminals_values) {
-	//   cout << "union for token: " << s << endl;
-	//   int x;
-	//   cin >> x;
-	//   union_members[x].insert(
-	// }
       }
 
       cout << "struct: " << endl;
@@ -275,7 +276,7 @@ choose_option:
 	con_struct_ed += "\t\tstruct { ";
 	int i = 0;
 	for (auto s: rule->reductions->reds[cr]->non_terminals_values) {
-	  con_struct_ed += s + " v" + to_string(i) + "; ";
+	  con_struct_ed += "T_" + s + " v" + to_string(i) + "; ";
 	  i++;
 	}
 	con_struct_ed += "} ";
@@ -284,40 +285,169 @@ choose_option:
 	con_struct_ed += temp + ";\n";
 	count ++;
       }
-      con_struct_ed += "};\n";
+      con_struct_ed += "\t};\n";
       
       // multiple constructors
       // maybe store vector of strings and then see from that
       // yeah should work
-      string constructor_decl = "S_" + nt + "(";
-      for (int num = 0; num < all_types.size(); num ++) {
-	constructor_decl += "T_" + all_types[num] + " a" + to_string(num);
-	constructor_decl += ", ";
+      // auto vec_comp = [](vector<string> a, vector<string> b) { sort(a.begin(), a.end()); sort(b.begin(), b.end()); return a < b; };
+      map<vector<string>, vector<int>> constructor_map;
+
+      for (int cr: chosen_reds) {
+	constructor_map[rule->reductions->reds[cr]->non_terminals_values].push_back(cr);
       }
-      constructor_decl += "int enum_kind)";
-      con_struct_ed += "\t" + constructor_decl + ";\n";
+      
+      vector<string> constructor_decls;
+
+      for (auto& [vec_types, vec_int]: constructor_map) {
+	string constructor_decl = "S_" + nt + "(";
+	for (int i = 0; i < vec_types.size(); i ++){
+	  constructor_decl += "T_" + vec_types[i] + " a" + to_string(i);
+	  if (i != vec_types.size() - 1) {
+	    constructor_decl += ", ";
+	  }
+	}
+	if (vec_int.size() > 1) {
+	  constructor_decl += ", int enum_kind";
+	}
+	constructor_decl += ")";
+	constructor_decls.push_back(constructor_decl);
+      }
+      
+      for (string c: constructor_decls) {
+	con_struct_ed += "\t" + c + ";\n";
+      }
+
       con_struct_ed += "\tvoid print(int tab);\n};\n";
 
       cout << con_struct_ed;
       
       cout << "functions:" << endl;
-      string constructor = "S_" + nt + "::" + constructor_decl + "{\n";
 
-      for (int i = 0; i < all_types.size(); i ++) {
-	constructor += "\tv" + to_string(i) + " = " + "a" + to_string(i) + ";\n";
+      vector<string> constructors;
+      int con_num = 0;
+      for (auto& [vec_types, vec_int]: constructor_map) {
+	string constructor = "S_" + nt + "::" + constructor_decls[con_num] + " {\n";
+	int vi = vec_int[0];
+	string temp = enums[vi];
+	transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+	for (int i = 0; i < rule->reductions->reds[vi]->non_terminals_values.size(); i ++){
+	  constructor += "\t" + temp + ".v" + to_string(i) + " = a" + to_string(i) + ";\n";
+	}
+	if (vec_int.size() == 1) 
+	  constructor += "\tkind = " + enums[vi] + ";\n}\n";
+	else 
+	  constructor += "\tkind = enum_kind;\n}\n";
+	constructors.push_back(constructor);
+	con_num ++;
       }
-      constructor += "\tkind = enum_kind;\n";
-      constructor += "}\n";
-      cout << constructor << endl;
-      
-      string printer = "void S_" + nt + "::print(int tab) {\n";
+      string printer = "S_" + nt + "::print(tab) {\n";
       printer += "\tprint_tab(tab);\n";
-      printer += "\tcout << \"+" + nt + " type: \" << kind << endl;\n";
-      for (int i = 0; i < all_types.size(); i ++) {
-	printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
+      printer += "\tcout << \"+" + nt + "\";\n";
+      printer += "\tswitch(kind) {\n";
+      for (auto& [vec_types, vec_int]: constructor_map) {
+	for (auto vi: vec_int) {
+	  printer += "\tcase " + to_string(vi) + ":\n";
+	  printer += "\t\tcout << \" kind = " + enums[vi] + "\" << endl;\n";
+	  string temp = enums[vi];
+	  transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+	  for (int i = 0; i < vec_types.size(); i ++) {
+	    printer += "\t\t" + temp + ".v" + to_string(i) + "->print(tab+1);\n";
+	  }
+	  printer += "\t\tbreak;\n";
+	}
       }
-      printer += "}\n";
+      printer += "\t}\n}\n";
+
+      for (string con: constructors) {
+	cout << con << endl;
+      }
+      cout << printer << endl;
+
+      cout << "bison reduction actions:" << endl;
       
+      string red_act = nt + "\n";
+      
+      for (int i = 0; i < rule->reductions->reds.size(); i ++){
+	if (i == 0) red_act +=  "        : ";
+	else red_act += "        | ";
+	red_act += rule->reductions->reds[i]->toString();
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	else {
+	  red_act += " { $$ = new S_" + nt + "(";
+	  auto & vei = constructor_map[rule->reductions->reds[i]->non_terminals_values];
+	  for (int k = 0; k < rule->reductions->reds[i]->non_terminals_values.size(); k ++) {
+	    auto ntp = rule->reductions->reds[i]->non_terminals_values[k];
+	    int x = rule->reductions->reds[i]->findIdx(ntp);
+	    red_act += "$" + to_string(x);
+	    if (k != rule->reductions->reds[i]->non_terminals_values.size()-1){
+	      red_act += ", ";
+	    }
+	  }
+	  if (vei.size() > 1)
+	    red_act += ", " + to_string(i) + "); }\n";
+	  else
+	    red_act += "); }\n";
+	}
+      }
+      red_act += "        ;\n";
+      
+      cout << red_act << endl;
+      
+    }
+    else if (op == "l") {
+      if (chosen_reds.size() != 2) {
+	cout << "rule doesn't match list construction, use manual ig" << endl;
+	goto choose_option;
+      }
+      vector<string> v1, v2;
+      auto it = chosen_reds.begin();
+      int p1 = *it;
+      int p2 = *(++it);
+      if (rule->reductions->reds[p1]->values.size() == 1 && rule->reductions->reds[p2]->values.size() == 2) {
+	v1 = rule->reductions->reds[p1]->values;
+	v2 = rule->reductions->reds[p2]->values;
+      }
+      else if (rule->reductions->reds[p1]->values.size() == 2 && rule->reductions->reds[p2]->values.size() == 1) {
+	v1 = rule->reductions->reds[p2]->values;
+	v2 = rule->reductions->reds[p1]->values;
+      }
+      else {
+	cout << "rule doesn't match list construction, use manual ig" << endl;
+	goto choose_option;
+      }
+      string elem;
+      bool prefix = false;
+      if (v2[0] == nt) {
+	prefix = true;
+	if (v1[0] != v2[1]) {
+	  cout << "rule doesn't match list construction, use manual ig" << endl;
+	  goto choose_option;
+	}
+      }
+      else if (v2[1] == nt) {
+	if (v1[0] != v2[0]) {
+	  cout << "rule doesn't match list construction, use manual ig" << endl;
+	  goto choose_option;
+	}
+      }
+      else {
+	cout << "rule doesn't match list construction, use manual ig" << endl;
+	goto choose_option;
+      }
+      //  {\n\tvector<T_" + v1[0] + "> v;\n\t
+      
+      cout << "struct:" << endl;
+      string con_struct_ed = "struct S_" + nt + " {\n\tvector<T_" + v1[0] + "> v;\n";
+      con_struct_ed += "\tT_" + nt + " add(T_" + v1[0] + " a);\n";
+      con_struct_ed += "\tprint(int tab);\n}";
+      cout << con_struct_ed << endl;
+      cout << "functions:" << endl;
+      string add_func = "T_" + nt + " S_" + nt + "::add(T_" + v1[0] + " a) {\n";
+      add_func += "\tv.push_back(a);\n\treturn this;\n}\n";
+      string printer = "void S_" + nt + "::print(int tab) {\n\tprint_tab(tab);\n\tcout << \"+" + nt + "\" << endl;\n\tfor(auto e: v) e->print(tab+1);\n}\n";
+      // cout << constructor << endl;
+      cout << add_func << endl;
       cout << printer << endl;
       
       cout << "bison reduction actions:" << endl;
@@ -330,26 +460,21 @@ choose_option:
 	red_act += rule->reductions->reds[i]->toString();
 	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
 	else {
-	  red_act += " { $$ = new S_" + nt + "(";
-	  for (auto ntp: all_types) {
-	    int x = rule->reductions->reds[i]->findIdx(ntp);
-	    if (x == -1) {
-	      red_act += "NULL, ";
+	  if (rule->reductions->reds[i]->non_terminals_values.size() == 1) {
+	    red_act += "{ $$ = new S_" + nt + "(); $$ = $$.add($1); }\n";
+	  }
+	  else {
+	    if (prefix) {
+	      red_act += "{ $$ = $1.add($2); }\n";
 	    }
 	    else {
-	      red_act += "$" + to_string(x) + ", ";
+	      red_act += "{ $$ = $2.add($1); }\n";
 	    }
 	  }
-	  red_act += to_string(i) + "); }\n";
 	}
       }
       red_act += "        ;\n";
-      
       cout << red_act << endl;
-      
-    }
-    else if (op == "l") {
-      
     }
     else if (op == "m") {
 

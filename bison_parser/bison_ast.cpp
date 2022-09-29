@@ -1,6 +1,5 @@
 #include "bison_ast.h"
 
-
 bool hasValue(string s){
   if (s[0] == '\''){
     return false;
