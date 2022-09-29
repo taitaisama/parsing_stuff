@@ -1,6 +1,7 @@
 C   [A-Z_]
 S   [a-z_]
 L   [a-zA-Z_]
+N   [0-9]
 WS  [ \t\v\n\f]
 ES  (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 %{
@@ -26,7 +27,7 @@ static void comment(void);
 "|"                         { return('|'); }
 ";"                         { return(';'); }
 "%%"                        { return(DELIMITER); }					  
-"<"{ES}+">"                 { return(TYPE); }
+"<"{L}+">"                  { yylval.strval = typetostrval(yytext); return(TYPE); }
 {WS}+	                    {}
 .                           {}
 %%

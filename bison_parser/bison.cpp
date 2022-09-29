@@ -21,6 +21,7 @@ int indent = 85;
 ofstream ast_header{"ast.h"};
 ofstream ast_cpp{"ast.cpp"};
 ofstream bison_file{"reductions.y"};
+ofstream inputs{"inputs.txt"};
 
 struct nt_features {
   string struct_definition;
@@ -54,6 +55,8 @@ void create_ast () {
     cout << "enter non-terminal name to evaluate, 0 to exit, 1 to list all non-terminals" << endl;
     string nt;
     cin >> nt;
+    inputs << nt << endl;
+    
     if (nt == "0"){
       break;
     }
@@ -63,9 +66,6 @@ void create_ast () {
       }
       cout << endl;
       continue;
-    }
-    if (remaining_nts.find(nt) != remaining_nts.end()){
-      remaining_nts.erase(nt);
     }
     auto x = non_terminals.find(nt);
     if (x == non_terminals.end()){
@@ -81,6 +81,7 @@ void create_ast () {
       r->print_pretty();
       string ch;
       cin >> ch;
+      inputs << ch << endl;
       if (ch == "y"){
 	chosen_reds.insert(i);
       }
@@ -103,7 +104,7 @@ choose_option:
     cout << "enter implementation style" << endl;
     cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nm for multiple with no enum (also uses default constructor, useful for empty list situations)\nu for union+enum\nl for list\nd for do it yourself" << endl;
     cin >> op;
-    
+    inputs << op << endl;
     
     if (op == "n"){
       if (chosen_reds.size() > 1){
@@ -183,6 +184,7 @@ choose_option:
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
 	cin >> en;
+	inputs << en << endl;
 	enums.push_back(en);
       }
       
@@ -293,6 +295,7 @@ choose_option:
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
 	cin >> en;
+	inputs << en << endl;
 	enums.push_back(en);
       }
 
@@ -331,9 +334,10 @@ choose_option:
       // yeah should work
       // auto vec_comp = [](vector<string> a, vector<string> b) { sort(a.begin(), a.end()); sort(b.begin(), b.end()); return a < b; };
       map<vector<string>, vector<int>> constructor_map;
-
+      int idx = 0;
       for (int cr: chosen_reds) {
-	constructor_map[rule->reductions->reds[cr]->non_terminals_values].push_back(cr);
+	constructor_map[rule->reductions->reds[cr]->non_terminals_values].push_back(idx);
+	idx ++;
       }
       
       vector<string> constructor_decls;
@@ -448,13 +452,13 @@ choose_option:
       auto it = chosen_reds.begin();
       int p1 = *it;
       int p2 = *(++it);
-      if (rule->reductions->reds[p1]->values.size() == 1 && rule->reductions->reds[p2]->values.size() == 2) {
-	v1 = rule->reductions->reds[p1]->values;
-	v2 = rule->reductions->reds[p2]->values;
+      if (rule->reductions->reds[p1]->non_terminals_values.size() == 1 && rule->reductions->reds[p2]->non_terminals_values.size() == 2) {
+	v1 = rule->reductions->reds[p1]->non_terminals_values;
+	v2 = rule->reductions->reds[p2]->non_terminals_values;
       }
-      else if (rule->reductions->reds[p1]->values.size() == 2 && rule->reductions->reds[p2]->values.size() == 1) {
-	v1 = rule->reductions->reds[p2]->values;
-	v2 = rule->reductions->reds[p1]->values;
+      else if (rule->reductions->reds[p1]->non_terminals_values.size() == 2 && rule->reductions->reds[p2]->non_terminals_values.size() == 1) {
+	v1 = rule->reductions->reds[p2]->non_terminals_values;
+	v2 = rule->reductions->reds[p1]->non_terminals_values;
       }
       else {
 	cout << "rule doesn't match list construction, use manual ig" << endl;
@@ -598,7 +602,7 @@ choose_option:
 	  for (auto ntp: all_types) {
 	    int x = rule->reductions->reds[i]->findIdx(ntp);
 	    if (x == -1) {
-	      red_act += "new T_" + ntp + "()";
+	      red_act += "NULL";
 	    }
 	    else {
 	      red_act += "$" + to_string(x);
@@ -629,6 +633,7 @@ choose_option:
 
     cout << "do you want to confirm these generated fucntions? y/n" << endl;
     string yn; cin >> yn;
+    inputs << yn << endl;
     if (yn == "y") {
       cout << "ok, writing functions to file" << endl;
       for (auto cr: chosen_reds) {

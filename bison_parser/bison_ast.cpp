@@ -1,28 +1,24 @@
 #include "bison_ast.h"
 
-bool hasValue(string s){
-  if (s[0] == '\''){
-    return false;
-  }
-  if (s[0] <= 'z' && s[0] >= 'a'){ // non-terminal
-    return true;
-  }
-  else { // terminal, check if it has value
-    // TODO
-    return false;
-  }
-}
-
 void S_reduction::add (string str){
-  values.push_back(str);
-  if (hasValue(str)){
-    // for (auto str2: non_terminals_values){
-    //   if (str == str2) {
-    // 	cout << "repeated " << str << endl;
-    //   }
-    // }
+  if (str[0] == '\''){
+    values.push_back(str);
+  }
+  else if (str[0] <= 'z' && str[0] >= 'a') {
+    values.push_back(str);
     non_terminals_values.push_back(str);
     non_terminal_pos.push_back(values.size());
+  }
+  else {
+    if (token_types.find(str) == token_types.end() || token_types[str] == ""){
+      values.push_back(str);
+    }
+    else {
+      string nstr = token_types[str]; 
+      values.push_back(str);
+      non_terminals_values.push_back(nstr);
+      non_terminal_pos.push_back(values.size());
+    }
   }
 }
 
@@ -190,7 +186,7 @@ T_terminal_list T_create_terminal_list(char* t) {
   return tl;
 }
 
-T_terminal_list T_add_to_terminal_list(T_terminal_list tl, char* t) {
+T_terminal_list T_add_to_terminal_list(T_terminal_list tl, char* t) {  
   tl->add(t);
   return tl;
 }
@@ -305,3 +301,13 @@ char* tostrval(char *yytext) {
   strval[len] = '\0';
   return strval;
 }
+
+char* typetostrval(char *yytext) {
+  size_t len = strlen(yytext);
+  char *strval = (char*) malloc(sizeof(char *) * len + 1);  // add one for the end character
+  strval = strncpy(strval, yytext, len);
+  strval[len-1] = '\0';
+  strval++;
+  return strval;
+}
+

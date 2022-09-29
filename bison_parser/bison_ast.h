@@ -12,7 +12,6 @@ typedef struct S_prog* T_prog;
 
 void print(int tab, string str, string extra);
 void print(int tab, string str);
-bool hasValue(string s);
 
 struct S_reduction {
   vector<string> values;
@@ -114,4 +113,6 @@ T_token_decl_list T_add_to_token_decl_list(T_token_decl_list tdl, T_token_decl t
 T_prog T_create_prog(T_token_decl_list tdl, T_rule_list rl);
 
 char* tostrval(char *yytext);
+
+char* typetostrval(char *yytext);
 
