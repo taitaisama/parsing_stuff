@@ -20,7 +20,7 @@ int indent = 85;
 // ofstream redrules{"reduction_rules.y"};
 ofstream ast_header{"ast.h"};
 ofstream ast_cpp{"ast.cpp"};
-ofstream bison_file{"bison.y"};
+ofstream bison_file{"reductions.y"};
 
 struct nt_features {
   string struct_definition;
