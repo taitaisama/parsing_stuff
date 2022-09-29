@@ -21,7 +21,8 @@ int indent = 85;
 ofstream ast_header{"ast.h"};
 ofstream ast_cpp{"ast.cpp"};
 ofstream bison_file{"reductions.y"};
-ofstream inputs{"inputs.txt"};
+ifstream inputs{"inputs.txt"};
+
 
 struct nt_features {
   string struct_definition;
@@ -32,7 +33,7 @@ struct nt_features {
 string takeInputTillEnd() {
   string line;
   string func = "";
-  while (getline(cin, line)) {
+  while (getline(inputs, line)) {
     if (line == "end") {
       break;
     }
@@ -54,8 +55,8 @@ void create_ast () {
     cout << endl;
     cout << "enter non-terminal name to evaluate, 0 to exit, 1 to list all non-terminals" << endl;
     string nt;
-    cin >> nt;
-    inputs << nt << endl;
+    inputs >> nt;
+    // inputs << nt << endl;
     
     if (nt == "0"){
       break;
@@ -80,8 +81,8 @@ void create_ast () {
       cout << "Do you want to include the following reduction? enter y/n" << endl;
       r->print_pretty();
       string ch;
-      cin >> ch;
-      inputs << ch << endl;
+      inputs >> ch;
+      // inputs << ch << endl;
       if (ch == "y"){
 	chosen_reds.insert(i);
       }
@@ -103,8 +104,8 @@ choose_option:
 
     cout << "enter implementation style" << endl;
     cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nm for multiple with no enum (also uses default constructor, useful for empty list situations)\nu for union+enum\nl for list\nd for do it yourself" << endl;
-    cin >> op;
-    inputs << op << endl;
+    inputs >> op;
+    // inputs << op << endl;
     
     if (op == "n"){
       if (chosen_reds.size() > 1){
@@ -143,7 +144,10 @@ choose_option:
       printer += "\tprint_tab(tab);\n";
       printer += "\tcout << \"+" + nt + "\" << endl;\n";
       for (int i = 0; i < v->non_terminals_values.size(); i ++) {
-	printer += "\tv" + to_string(i) + "->print(tab+1);\n";
+	if (non_terminals.find(v->non_terminals_values[i]) == non_terminals.end())
+	  printer += "\tcout << v" + to_string(i) + " << endl;\n";
+	else
+	  printer += "\tv" + to_string(i) + "->print(tab+1);\n";
       }
       printer += "}\n";
 
@@ -183,8 +187,8 @@ choose_option:
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
-	cin >> en;
-	inputs << en << endl;
+	inputs >> en;
+	// inputs << en << endl;
 	enums.push_back(en);
       }
       
@@ -232,13 +236,13 @@ choose_option:
       for (int i = 0; i < all_types.size(); i ++) {
 	constructor += "\tv" + to_string(i) + " = " + "a" + to_string(i) + ";\n";
       }
-      constructor += "\tkind = enum_kind;\n";
+      constructor += "\tkind = static_cast<typeof(kind)>(enum_kind);\n";
       constructor += "}\n";
       cout << constructor << endl;
       
       string printer = "void S_" + nt + "::print(int tab) {\n";
       printer += "\tprint_tab(tab);\n";
-      printer += "\tcout << \"+" + nt + ";\n";
+      printer += "\tcout << \"+" + nt + "\";\n";
       printer += "\tswitch(kind) {\n";
       for (int i = 0; i < enums.size(); i ++) {
 	printer += "\tcase " + to_string(i) + ":\n";
@@ -247,7 +251,10 @@ choose_option:
       }
       printer += "\t}\n";
       for (int i = 0; i < all_types.size(); i ++) {
-	printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
+	if (non_terminals.find(all_types[i]) == non_terminals.end())
+	  printer += "\tcout << v" + to_string(i) + " << endl;\n";
+	else 
+	  printer += "\tif (v" + to_string(i) + " != NULL)\tv" + to_string(i) + "->print(tab+1);\n";
       }
       printer += "}\n";
       
@@ -294,8 +301,8 @@ choose_option:
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
-	cin >> en;
-	inputs << en << endl;
+	inputs >> en;
+	// inputs << en << endl;
 	enums.push_back(en);
       }
 
@@ -341,6 +348,10 @@ choose_option:
       }
       
       vector<string> constructor_decls;
+      vector<int> chosen_reds_vec;
+      for (auto cr: chosen_reds){
+	chosen_reds_vec.push_back(cr);
+      }
 
       for (auto& [vec_types, vec_int]: constructor_map) {
 	string constructor_decl = "S_" + nt + "(";
@@ -374,17 +385,17 @@ choose_option:
 	int vi = vec_int[0];
 	string temp = enums[vi];
 	transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
-	for (int i = 0; i < rule->reductions->reds[vi]->non_terminals_values.size(); i ++){
+	for (int i = 0; i < rule->reductions->reds[chosen_reds_vec[vi]]->non_terminals_values.size(); i ++){
 	  constructor += "\t" + temp + ".v" + to_string(i) + " = a" + to_string(i) + ";\n";
 	}
 	if (vec_int.size() == 1) 
 	  constructor += "\tkind = " + enums[vi] + ";\n}\n";
 	else 
-	  constructor += "\tkind = enum_kind;\n}\n";
+	  constructor += "\tkind = static_cast<typeof(kind)>(enum_kind);\n}\n";
 	constructors.push_back(constructor);
 	con_num ++;
       }
-      string printer = "S_" + nt + "::print(tab) {\n";
+      string printer = "void S_" + nt + "::print(int tab) {\n";
       printer += "\tprint_tab(tab);\n";
       printer += "\tcout << \"+" + nt + "\";\n";
       printer += "\tswitch(kind) {\n";
@@ -395,7 +406,10 @@ choose_option:
 	  string temp = enums[vi];
 	  transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 	  for (int i = 0; i < vec_types.size(); i ++) {
-	    printer += "\t\t" + temp + ".v" + to_string(i) + "->print(tab+1);\n";
+	    if (non_terminals.find(vec_types[i]) == non_terminals.end())
+	      printer += "\tcout << " + temp + ".v" + to_string(i) + " << endl;\n";
+	    else
+	      printer += "\t\t" + temp + ".v" + to_string(i) + "->print(tab+1);\n";
 	  }
 	  printer += "\t\tbreak;\n";
 	}
@@ -553,9 +567,10 @@ choose_option:
       string constructor_decl = "S_" + nt + "(";
       for (int num = 0; num < all_types.size(); num ++) {
 	constructor_decl += "T_" + all_types[num] + " a" + to_string(num);
-	constructor_decl += ", ";
+	if (num != all_types.size()-1)
+	  constructor_decl += ", ";
       }
-      constructor_decl += "int enum_kind)";
+      constructor_decl += ")";
       con_struct_ed += "\t" + constructor_decl + ";\n";
       con_struct_ed += "\tvoid print(int tab);\n};\n";
 
@@ -567,16 +582,17 @@ choose_option:
       for (int i = 0; i < all_types.size(); i ++) {
 	constructor += "\tv" + to_string(i) + " = " + "a" + to_string(i) + ";\n";
       }
-      constructor += "\tkind = enum_kind;\n";
       constructor += "}\n";
       cout << constructor << endl;
       
       string printer = "void S_" + nt + "::print(int tab) {\n";
       printer += "\tprint_tab(tab);\n";
-      printer += "\tcout << \"+" + nt + " << endl;\n";
-      printer += "\tswitch(kind) {\n";
+      printer += "\tcout << \"+" + nt + "\" << endl;\n";
       for (int i = 0; i < all_types.size(); i ++) {
-	printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
+	if (non_terminals.find(all_types[i]) == non_terminals.end())
+	  printer += "\tcout << v" + to_string(i) + " << endl;\n";
+	else
+	  printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
       }
       printer += "}\n";
       
@@ -611,7 +627,7 @@ choose_option:
 	      red_act += ", ";
 	    }
 	  }
-	  red_act += "}\n";
+	  red_act += "); }\n";
 	}
       }
       red_act += "        ;\n";
@@ -632,8 +648,8 @@ choose_option:
     }
 
     cout << "do you want to confirm these generated fucntions? y/n" << endl;
-    string yn; cin >> yn;
-    inputs << yn << endl;
+    string yn; inputs >> yn;
+    // inputs << yn << endl;
     if (yn == "y") {
       cout << "ok, writing functions to file" << endl;
       for (auto cr: chosen_reds) {
@@ -655,7 +671,8 @@ choose_option:
     
   }
   ast_header << "#include <bits/stdc++.h>\nusing namespace std;\n\n";
-  ast_cpp << "#include ast.h;\n\n";
+  ast_header << "typedef int* T_int;\ntypedef string* T_str;\ntypedef float* T_float;\n";
+  ast_cpp << "#include \"ast.h\"\n\n";
   ast_header << "void print_tab(int tab);\n";
   ast_cpp << "void print_tab(int tab) {\n\tfor(int i = 0; i < tab; i ++) {\n\t\tcout << \"|\";\n\t}\n}\n";
   for (auto &[n_t, ntf]: done_nt_features) {
