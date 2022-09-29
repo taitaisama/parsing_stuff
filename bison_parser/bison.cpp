@@ -13,14 +13,38 @@ extern T_prog prog_ast;
 
 map<string, T_rule> non_terminals;
 map<string, string> token_types;
+int indent = 85;
+// ofstream struct_names{"struct_names.h"};
+// ofstream typedefs{"typedefs.h"};
+// ofstream funcs{"functions.cpp"};
+// ofstream redrules{"reduction_rules.y"};
+ofstream ast_header{"ast.h"};
+ofstream ast_cpp{"ast.cpp"};
+ofstream bison_file{"bison.y"};
 
-static void usage()
-{
-  printf("Usage: bison <prog.c>\n");
+struct nt_features {
+  string struct_definition;
+  string functions;
+  string bison_actions;
+};
+
+string takeInputTillEnd() {
+  string line;
+  string func = "";
+  while (getline(cin, line)) {
+    if (line == "end") {
+      break;
+    }
+    func += line;
+  }
+  return func;
 }
+  
+map<string, nt_features> done_nt_features;
 
 void create_ast () {
   set<string> remaining_nts;
+  set<string> done_nts;
   while (true) {
     cout << "remaining requeired non-terminals are:" << endl;
     for (string s: remaining_nts){
@@ -69,21 +93,25 @@ void create_ast () {
       cout << "no reduction chosen, continuing" << endl;
       continue;
     }
-    // cout << "do you want to merge any reductions together? merged rules will have the same function call and will be treated as one. Make sure that the two merged reductions have the same meaning and the same variables to be stored." << endl;
+    
     string op;
+    
+    string con_struct_ed, functions, red_act;
 
 choose_option:
 
     cout << "enter implementation style" << endl;
-    cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nu for union+enum\nl for list\nm for manual" << endl;
+    cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nm for multiple with no enum (also uses default constructor, useful for empty list situations)\nu for union+enum\nl for list\nd for do it yourself" << endl;
     cin >> op;
+    
+    
     if (op == "n"){
       if (chosen_reds.size() > 1){
 	cout << "more than one reduction, cannot make normal form" << endl;
 	goto choose_option;
       }
       cout << "struct: " << endl;
-      string con_struct_ed = "";
+      con_struct_ed = "";
       con_struct_ed += "struct S_" + nt + " {\n";
       auto& v = rule->reductions->reds[*chosen_reds.begin()];
       for (int i = 0; i < v->non_terminals_values.size(); i ++) {
@@ -120,14 +148,20 @@ choose_option:
 
       cout << printer << endl;
 
+      functions = constructor + printer;
+
       cout << "bison reduction actions:" << endl;
       
-      string red_act = nt + "\n";
+      red_act = nt + "\n";
       
       for (int i = 0; i < rule->reductions->reds.size(); i ++){
 	if (i == 0) red_act +=  "        : ";
 	else red_act += "        | ";
-	red_act += rule->reductions->reds[i]->toString();
+	string redstring = rule->reductions->reds[i]->toString();
+	red_act += redstring;
+	for (int i = redstring.size(); i <= indent; i ++){
+	  red_act += " ";
+	}
 	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
 	else {
 	  red_act += " { $$ = new S_" + nt + "(";
@@ -143,7 +177,6 @@ choose_option:
 
     }
     else if (op == "e") {
-      
       cout << "enter enum names for each chosen reduction (make it ALL CAPS)" << endl;
       vector<string> enums;
       for (int cr: chosen_reds) {
@@ -169,7 +202,7 @@ choose_option:
       }
 
       cout << "struct: " << endl;
-      string con_struct_ed = "struct S_" + nt + " {\n";
+      con_struct_ed = "struct S_" + nt + " {\n";
       con_struct_ed += "\tenum {";
       int id = 0;
       for (string e: enums) {
@@ -217,15 +250,21 @@ choose_option:
       printer += "}\n";
       
       cout << printer << endl;
+
+      functions = constructor + printer;
       
       cout << "bison reduction actions:" << endl;
       
-      string red_act = nt + "\n";
+      red_act = nt + "\n";
       
       for (int i = 0; i < rule->reductions->reds.size(); i ++){
 	if (i == 0) red_act +=  "        : ";
 	else red_act += "        | ";
-	red_act += rule->reductions->reds[i]->toString();
+	string redstring = rule->reductions->reds[i]->toString();
+	red_act += redstring;
+	for (int i = redstring.size(); i <= indent; i ++){
+	  red_act += " ";
+	}
 	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
 	else {
 	  red_act += " { $$ = new S_" + nt + "(";
@@ -258,7 +297,7 @@ choose_option:
       }
 
       cout << "struct: " << endl;
-      string con_struct_ed = "struct S_" + nt + " {\n";
+      con_struct_ed = "struct S_" + nt + " {\n";
       con_struct_ed += "\tenum {";
       int id = 0;
       for (string e: enums) {
@@ -358,20 +397,27 @@ choose_option:
 	}
       }
       printer += "\t}\n}\n";
-
+      functions = "";
       for (string con: constructors) {
 	cout << con << endl;
+	functions += con;
       }
       cout << printer << endl;
+      functions += printer;
+
 
       cout << "bison reduction actions:" << endl;
       
-      string red_act = nt + "\n";
+      red_act = nt + "\n";
       
       for (int i = 0; i < rule->reductions->reds.size(); i ++){
 	if (i == 0) red_act +=  "        : ";
 	else red_act += "        | ";
-	red_act += rule->reductions->reds[i]->toString();
+	string redstring = rule->reductions->reds[i]->toString();
+	red_act += redstring;
+	for (int i = redstring.size(); i <= indent; i ++){
+	  red_act += " ";
+	}
 	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
 	else {
 	  red_act += " { $$ = new S_" + nt + "(";
@@ -390,10 +436,8 @@ choose_option:
 	    red_act += "); }\n";
 	}
       }
-      red_act += "        ;\n";
-      
+      red_act += "        ;\n";      
       cout << red_act << endl;
-      
     }
     else if (op == "l") {
       if (chosen_reds.size() != 2) {
@@ -435,10 +479,8 @@ choose_option:
 	cout << "rule doesn't match list construction, use manual ig" << endl;
 	goto choose_option;
       }
-      //  {\n\tvector<T_" + v1[0] + "> v;\n\t
-      
       cout << "struct:" << endl;
-      string con_struct_ed = "struct S_" + nt + " {\n\tvector<T_" + v1[0] + "> v;\n";
+      con_struct_ed = "struct S_" + nt + " {\n\tvector<T_" + v1[0] + "> v;\n";
       con_struct_ed += "\tT_" + nt + " add(T_" + v1[0] + " a);\n";
       con_struct_ed += "\tprint(int tab);\n}";
       cout << con_struct_ed << endl;
@@ -446,18 +488,24 @@ choose_option:
       string add_func = "T_" + nt + " S_" + nt + "::add(T_" + v1[0] + " a) {\n";
       add_func += "\tv.push_back(a);\n\treturn this;\n}\n";
       string printer = "void S_" + nt + "::print(int tab) {\n\tprint_tab(tab);\n\tcout << \"+" + nt + "\" << endl;\n\tfor(auto e: v) e->print(tab+1);\n}\n";
-      // cout << constructor << endl;
+      
       cout << add_func << endl;
       cout << printer << endl;
+
+      functions = add_func + printer;
       
       cout << "bison reduction actions:" << endl;
       
-      string red_act = nt + "\n";
+      red_act = nt + "\n";
       
       for (int i = 0; i < rule->reductions->reds.size(); i ++){
 	if (i == 0) red_act +=  "        : ";
 	else red_act += "        | ";
-	red_act += rule->reductions->reds[i]->toString();
+	string redstring = rule->reductions->reds[i]->toString();
+	red_act += redstring;
+	for (int i = redstring.size(); i <= indent; i ++){
+	  red_act += " ";
+	}
 	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
 	else {
 	  if (rule->reductions->reds[i]->non_terminals_values.size() == 1) {
@@ -477,20 +525,152 @@ choose_option:
       cout << red_act << endl;
     }
     else if (op == "m") {
+      
+      map<string, int> all_types_set;
+      for (int cr: chosen_reds) {
+	auto& v = rule->reductions->reds[cr];
+	for (string s: v->non_terminals_values) {
+	  if (all_types_set.find(s) == all_types_set.end()) {
+	    all_types_set[s] = all_types_set.size();
+	  }
+	}
+      }
+      vector<string> all_types = vector<string> (all_types_set.size());
+      
+      for (auto &[ty, num]: all_types_set) {
+	all_types[num] = ty;
+      }
 
+      cout << "struct: " << endl;
+      con_struct_ed = "struct S_" + nt + " {\n";
+      for (int num = 0; num < all_types.size(); num ++) {
+	con_struct_ed += "\tT_"+ all_types[num] + " v" + to_string(num) + ";\n";
+      }
+      string constructor_decl = "S_" + nt + "(";
+      for (int num = 0; num < all_types.size(); num ++) {
+	constructor_decl += "T_" + all_types[num] + " a" + to_string(num);
+	constructor_decl += ", ";
+      }
+      constructor_decl += "int enum_kind)";
+      con_struct_ed += "\t" + constructor_decl + ";\n";
+      con_struct_ed += "\tvoid print(int tab);\n};\n";
+
+      cout << con_struct_ed;
+      
+      cout << "functions:" << endl;
+      string constructor = "S_" + nt + "::" + constructor_decl + "{\n";
+
+      for (int i = 0; i < all_types.size(); i ++) {
+	constructor += "\tv" + to_string(i) + " = " + "a" + to_string(i) + ";\n";
+      }
+      constructor += "\tkind = enum_kind;\n";
+      constructor += "}\n";
+      cout << constructor << endl;
+      
+      string printer = "void S_" + nt + "::print(int tab) {\n";
+      printer += "\tprint_tab(tab);\n";
+      printer += "\tcout << \"+" + nt + " << endl;\n";
+      printer += "\tswitch(kind) {\n";
+      for (int i = 0; i < all_types.size(); i ++) {
+	printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
+      }
+      printer += "}\n";
+      
+      cout << printer << endl;
+
+      functions = constructor + printer;
+      
+      cout << "bison reduction actions:" << endl;
+      
+      red_act = nt + "\n";
+      
+      for (int i = 0; i < rule->reductions->reds.size(); i ++){
+	if (i == 0) red_act +=  "        : ";
+	else red_act += "        | ";
+	string redstring = rule->reductions->reds[i]->toString();
+	red_act += redstring;
+	for (int i = redstring.size(); i <= indent; i ++){
+	  red_act += " ";
+	}
+	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented\"; } \n";
+	else {
+	  red_act += " { $$ = new S_" + nt + "(";
+	  for (auto ntp: all_types) {
+	    int x = rule->reductions->reds[i]->findIdx(ntp);
+	    if (x == -1) {
+	      red_act += "new T_" + ntp + "()";
+	    }
+	    else {
+	      red_act += "$" + to_string(x);
+	    }
+	    if (ntp != all_types[all_types.size()-1]) {
+	      red_act += ", ";
+	    }
+	  }
+	  red_act += "}\n";
+	}
+      }
+      red_act += "        ;\n";
+      cout << red_act << endl;
+    }
+    else if (op == "d") {
+      cout << "write \"end\" when you have finished writing your stuff" << endl;
+      cout << "write the struct definition" << endl;
+      con_struct_ed = takeInputTillEnd();
+      cout << "write the functions" << endl;
+      functions = takeInputTillEnd();
+      cout << "write the bison reduction actions" << endl;
+      red_act = takeInputTillEnd();
     }
     else {
       cout << "please enter a valid option" << endl;
       goto choose_option;
     }
+
+    cout << "do you want to confirm these generated fucntions? y/n" << endl;
+    string yn; cin >> yn;
+    if (yn == "y") {
+      cout << "ok, writing functions to file" << endl;
+      for (auto cr: chosen_reds) {
+	for (string nont: rule->reductions->reds[cr]->non_terminals_values) {
+	  if (done_nts.find(nont) == done_nts.end()){
+	    if (non_terminals.find(nont) != non_terminals.end()) {
+	      remaining_nts.insert(nont);
+	    }
+	  }
+	}
+      }
+      remaining_nts.erase(nt);
+      done_nts.insert(nt);
+      done_nt_features[nt] = {con_struct_ed, functions, red_act};
+    }
+    else {
+      cout << "discarding functions, continuing" << endl;
+    }
+    
   }
+  ast_header << "#include <bits/stdc++.h>\nusing namespace std;\n\n";
+  ast_cpp << "#include ast.h;\n\n";
+  ast_header << "void print_tab(int tab);\n";
+  ast_cpp << "void print_tab(int tab) {\n\tfor(int i = 0; i < tab; i ++) {\n\t\tcout << \"|\";\n\t}\n}\n";
+  for (auto &[n_t, ntf]: done_nt_features) {
+    ast_header << "struct S_" + n_t + ";\n";
+  }
+  for (auto &[n_t, ntf]: done_nt_features) {
+    ast_header << "typedef struct S_" + n_t + "* T_" + n_t + ";\n";
+  }
+  for (auto &[n_t, ntf]: done_nt_features) {
+    ast_header << ntf.struct_definition;
+    ast_cpp << ntf.functions;
+    bison_file << ntf.bison_actions;
+  }
+  
 }
 
 int
 main(int argc, char **argv)
 {
   if (argc != 2) {
-    usage();
     exit(1);
   }
   char const *filename = argv[1];
