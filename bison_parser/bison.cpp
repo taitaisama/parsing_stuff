@@ -22,7 +22,7 @@ int indent = 85;
 ofstream ast_header{"ast.h"};
 ofstream ast_cpp{"ast.cpp"};
 ofstream bison_file{"reductions.y"};
-ofstream inputs{"inputs.txt"};
+ifstream inputs{"inputs.txt"};
 
 
 struct nt_features {
@@ -34,7 +34,7 @@ struct nt_features {
 string takeInputTillEnd() {
   string line;
   string func = "";
-  while (getline(cin, line)) {
+  while (getline(inputs, line)) {
     if (line == "end") {
       break;
     }
@@ -56,8 +56,8 @@ void create_ast () {
     cout << endl;
     cout << "enter non-terminal name to evaluate, 0 to exit, 1 to list all non-terminals" << endl;
     string nt;
-    cin >> nt;
-    inputs << nt << endl;
+    inputs >> nt;
+    // inputs << nt << endl;
     
     if (nt == "0"){
       break;
@@ -82,8 +82,8 @@ void create_ast () {
       cout << "Do you want to include the following reduction? enter y/n" << endl;
       r->print_pretty();
       string ch;
-      cin >> ch;
-      inputs << ch << endl;
+      inputs >> ch;
+      // inputs << ch << endl;
       if (ch == "y"){
 	chosen_reds.insert(i);
       }
@@ -105,8 +105,8 @@ choose_option:
 
     cout << "enter implementation style" << endl;
     cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nm for multiple with no enum (also uses default constructor, useful for empty list situations)\nu for union+enum\nl for list\nd for do it yourself" << endl;
-    cin >> op;
-    inputs << op << endl;
+    inputs >> op;
+    // inputs << op << endl;
     
     if (op == "n"){
       if (chosen_reds.size() > 1){
@@ -192,8 +192,8 @@ choose_option:
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
-	cin >> en;
-	inputs << en << endl;
+	inputs >> en;
+	// inputs << en << endl;
 	enums.push_back(en);
       }
       
@@ -306,8 +306,8 @@ choose_option:
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
-	cin >> en;
-	inputs << en << endl;
+	inputs >> en;
+	// inputs << en << endl;
 	enums.push_back(en);
       }
 
@@ -367,7 +367,10 @@ choose_option:
 	  }
 	}
 	if (vec_int.size() > 1) {
-	  constructor_decl += ", int enum_kind";
+	  if (vec_types.size() == 0)
+	    constructor_decl += "int enum_kind";
+	  else
+	    constructor_decl += ", int enum_kind";
 	}
 	constructor_decl += ")";
 	constructor_decls.push_back(constructor_decl);
@@ -453,8 +456,12 @@ choose_option:
 	      red_act += ", ";
 	    }
 	  }
-	  if (vei.size() > 1)
-	    red_act += ", " + to_string(i) + "); }\n";
+	  if (vei.size() > 1) {
+	    if (rule->reductions->reds[i]->non_terminals_values.size() == 0)
+	      red_act += to_string(i) + "); }\n";
+	    else
+	      red_act += ", " + to_string(i) + "); }\n";
+	  }
 	  else
 	    red_act += "); }\n";
 	}
@@ -653,8 +660,8 @@ choose_option:
     }
 
     cout << "do you want to confirm these generated fucntions? y/n" << endl;
-    string yn; cin >> yn;
-    inputs << yn << endl;
+    string yn; inputs >> yn;
+    // inputs << yn << endl;
     if (yn == "y") {
       cout << "ok, writing functions to file" << endl;
       for (auto cr: chosen_reds) {
