@@ -163,7 +163,7 @@ void create_ast () {
 choose_option:
 
     cout << "enter implementation style" << endl;
-    cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nm for multiple with no enum (also uses default constructor, useful for empty list situations)\nu for union+enum\nl for list\nd for do it yourself" << endl;
+    cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nm for multiple with no enum (also uses default constructor, useful for empty list situations)\nu for union+enum\nd for do it yourself" << endl;
     cin >> op;
     inputs << op << endl;
     
