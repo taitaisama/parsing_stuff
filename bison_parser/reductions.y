@@ -304,21 +304,21 @@ constant_expression
         : conditional_expression                                                                 { $$ = new S_constant_expression($1); }
         ;
 declaration
-        : declaration_specifiers ';'                                                             { $$ = new S_declaration($1, NULL); }
+        : declaration_specifiers ';'                                                             { throw "not implemented declaration"; }
         | declaration_specifiers init_declarator_list ';'                                        { $$ = new S_declaration($1, $2); }
         | static_assert_declaration                                                              { $$ = new S_declaration($1); }
         ;
 declaration_specifiers
         : storage_class_specifier declaration_specifiers                                         { $$ = new S_declaration_specifiers($1, $2); }
-        | storage_class_specifier                                                                { $$ = new S_declaration_specifiers($1, NULL); }
+        | storage_class_specifier                                                                { throw "not implemented declaration_specifiers"; }
         | type_specifier declaration_specifiers                                                  { $$ = new S_declaration_specifiers($1, $2); }
-        | type_specifier                                                                         { $$ = new S_declaration_specifiers($1, NULL); }
+        | type_specifier                                                                         { throw "not implemented declaration_specifiers"; }
         | type_qualifier declaration_specifiers                                                  { $$ = new S_declaration_specifiers($1, $2); }
-        | type_qualifier                                                                         { $$ = new S_declaration_specifiers($1, NULL); }
+        | type_qualifier                                                                         { throw "not implemented declaration_specifiers"; }
         | function_specifier declaration_specifiers                                              { $$ = new S_declaration_specifiers($1, $2); }
-        | function_specifier                                                                     { $$ = new S_declaration_specifiers($1, NULL); }
+        | function_specifier                                                                     { throw "not implemented declaration_specifiers"; }
         | alignment_specifier declaration_specifiers                                             { $$ = new S_declaration_specifiers($1, $2); }
-        | alignment_specifier                                                                    { $$ = new S_declaration_specifiers($1, NULL); }
+        | alignment_specifier                                                                    { throw "not implemented declaration_specifiers"; }
         ;
 init_declarator_list
         : init_declarator                                                                        { $$ = new S_init_declarator_list($1, NULL); }
@@ -389,9 +389,9 @@ struct_declarator
         ;
 enum_specifier
         : ENUM '{' enumerator_list '}'                                                           { $$ = new S_enum_specifier($3, NULL, 0); }
-        | ENUM '{' enumerator_list ',' '}'                                                       { $$ = new S_enum_specifier($3, NULL, 0); }
+        | ENUM '{' enumerator_list ',' '}'                                                       { throw "not implemented enum_specifier"; }
         | ENUM IDENTIFIER '{' enumerator_list '}'                                                { $$ = new S_enum_specifier($4, $2, 2); }
-        | ENUM IDENTIFIER '{' enumerator_list ',' '}'                                            { $$ = new S_enum_specifier($4, $2, 2); }
+        | ENUM IDENTIFIER '{' enumerator_list ',' '}'                                            { throw "not implemented enum_specifier"; }
         | ENUM IDENTIFIER                                                                        { $$ = new S_enum_specifier(NULL, $2, 4); }
         ;
 enumerator_list
@@ -500,7 +500,7 @@ direct_abstract_declarator
         ;
 initializer
         : '{' initializer_list '}'                                                               { $$ = new S_initializer($2); }
-        | '{' initializer_list ',' '}'                                                           { $$ = new S_initializer($2); }
+        | '{' initializer_list ',' '}'                                                           { throw "not implemented initializer"; }
         | assignment_expression                                                                  { $$ = new S_initializer($1); }
         ;
 initializer_list

@@ -208,8 +208,10 @@ choose_option:
 	  printer += "\tprint_tab(tab+1);\n";
 	  printer += "\tcout << v" + to_string(i) + " << endl;\n";
 	}
-	else
-	  printer += "\tv" + to_string(i) + "->print(tab+1);\n";
+	else {
+	  printer += "\tif (v" + to_string(i) + " != NULL) ";
+	  printer += "v" + to_string(i) + "->print(tab+1);\n";
+	}
       }
       printer += "}\n";
 
@@ -496,8 +498,10 @@ choose_option:
 	      printer += "\tprint_tab(tab+1);\n";
 	      printer += "\tcout << " + temp + ".v" + to_string(i) + " << endl;\n";
 	    }
-	    else
-	      printer += "\t\t" + temp + ".v" + to_string(i) + "->print(tab+1);\n";
+	    else {
+	      printer += "\t\tif (" + temp + ".v" + to_string(i) + " != NULL) ";
+	      printer += temp + ".v" + to_string(i) + "->print(tab+1);\n";
+	    }
 	  }
 	  printer += "\t\tbreak;\n";
 	}
@@ -702,7 +706,7 @@ choose_option:
 	  printer += "\tcout << v" + to_string(i) + " << endl;\n";
 	}
 	else
-	  printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
+	  printer += "if (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
       }
       printer += "}\n";
       

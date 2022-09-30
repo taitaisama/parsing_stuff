@@ -255,10 +255,10 @@ struct S_constant_expression {
 	void print(int tab);
 };
 struct S_declaration {
-	enum {NORMAL = 0, STATIC_ASSERT = 1, } kind;
+	enum {NORMAL = 0, STATIC_ASSERT_ = 1, } kind;
 	union {
 		struct { T_declaration_specifiers v0; T_init_declarator_list v1; } normal;
-		struct { T_static_assert_declaration v0; } static_assert;
+		struct { T_static_assert_declaration v0; } static_assert_;
 	};
 	S_declaration(T_declaration_specifiers a0, T_init_declarator_list a1);
 	S_declaration(T_static_assert_declaration a0);
@@ -350,7 +350,7 @@ struct S_direct_abstract_declarator {
 	void print(int tab);
 };
 struct S_direct_declarator {
-	enum {IDENTIFIER = 0, DECL1 = 1, DECL2 = 2, DECL3 = 3, DECL4 = 4, DECL5 = 5, DECL6 = 6, DECL7 = 7, DECL8 = 8, DECL9 = 9, DECL10 = 10, DECL11 = 11, DECL12 = 12, DECL12 = 13, } kind;
+	enum {IDENTIFIER = 0, DECL1 = 1, DECL2 = 2, DECL3 = 3, DECL4 = 4, DECL5 = 5, DECL6 = 6, DECL7 = 7, DECL8 = 8, DECL9 = 9, DECL10 = 10, DECL11 = 11, DECL12 = 12, DECL13 = 13, } kind;
 	union {
 		struct { T_strval v0; } identifier;
 		struct { T_declarator v0; } decl1;
@@ -365,7 +365,7 @@ struct S_direct_declarator {
 		struct { T_direct_declarator v0; T_assignment_expression v1; } decl10;
 		struct { T_direct_declarator v0; T_parameter_type_list v1; } decl11;
 		struct { T_direct_declarator v0; } decl12;
-		struct { T_direct_declarator v0; T_identifier_list v1; } decl12;
+		struct { T_direct_declarator v0; T_identifier_list v1; } decl13;
 	};
 	S_direct_declarator(T_declarator a0);
 	S_direct_declarator(T_direct_declarator a0, int enum_kind);
@@ -509,9 +509,9 @@ struct S_iteration_statement {
 	void print(int tab);
 };
 struct S_jump_statement {
-	enum {GOTO = 0, CONT = 1, BREAK_ = 2, RETURN_ = 3, RETUR_EXPR = 4, } kind;
+	enum {GOTO_ = 0, CONT = 1, BREAK_ = 2, RETURN_ = 3, RETUR_EXPR = 4, } kind;
 	union {
-		struct { T_strval v0; } goto;
+		struct { T_strval v0; } goto_;
 		struct { T_expression v0; } retur_expr;
 	};
 	S_jump_statement(int enum_kind);
@@ -718,7 +718,7 @@ struct S_type_specifier {
 	void print(int tab);
 };
 struct S_unary_expression {
-	enum {CAST = 0, NONE = 1, INDEX = 2, CALL = 3, DOT = 4, PTR = 5, POST_INC = 6, POST_DEC = 7, CAST_LIST = 8, PRE_INC = 9, PRE_DEC = 10, UNARY_OP = 11, SIZEOF = 12, SIZEOF_TYPE = 13, ALIGNOF = 14, } kind;
+	enum {CAST = 0, NONE = 1, INDEX = 2, CALL = 3, DOT = 4, PTR = 5, POST_INC = 6, POST_DEC = 7, CAST_LIST = 8, PRE_INC = 9, PRE_DEC = 10, UNARY_OP = 11, SIZEOF_ = 12, SIZEOF_TYPE = 13, ALIGNOF_ = 14, } kind;
 	union {
 		struct { T_type_name v0; T_unary_expression v1; } cast;
 		struct { T_primary_expression v0; } none;
@@ -732,9 +732,9 @@ struct S_unary_expression {
 		struct { T_unary_expression v0; } pre_inc;
 		struct { T_unary_expression v0; } pre_dec;
 		struct { T_unary_operator v0; T_unary_expression v1; } unary_op;
-		struct { T_unary_expression v0; } sizeof;
+		struct { T_unary_expression v0; } sizeof_;
 		struct { T_type_name v0; } sizeof_type;
-		struct { T_type_name v0; } alignof;
+		struct { T_type_name v0; } alignof_;
 	};
 	S_unary_expression(T_primary_expression a0);
 	S_unary_expression(T_type_name a0, int enum_kind);

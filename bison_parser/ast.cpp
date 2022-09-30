@@ -12,8 +12,8 @@ S_abstract_declarator::S_abstract_declarator(T_pointer a0, T_direct_abstract_dec
 void S_abstract_declarator::print(int tab) {
 	print_tab(tab);
 	cout << "+abstract_declarator" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_alignment_specifier::S_alignment_specifier(T_constant_expression a0) {
 	const_expr.v0 = a0;
@@ -29,11 +29,11 @@ void S_alignment_specifier::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = CONST_EXPR" << endl;
-		const_expr.v0->print(tab+1);
+		if (const_expr.v0 != NULL) const_expr.v0->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = TYPE_NAME" << endl;
-		type_name.v0->print(tab+1);
+		if (type_name.v0 != NULL) type_name.v0->print(tab+1);
 		break;
 	}
 }
@@ -44,8 +44,8 @@ S_argument_expression_list::S_argument_expression_list(T_assignment_expression a
 void S_argument_expression_list::print(int tab) {
 	print_tab(tab);
 	cout << "+argument_expression_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_assignment_expression::S_assignment_expression(T_conditional_expression a0) {
 	none.v0 = a0;
@@ -63,13 +63,13 @@ void S_assignment_expression::print(int tab) {
 	switch(kind) {
 	case 0:
 		cout << " kind = NONE" << endl;
-		none.v0->print(tab+1);
+		if (none.v0 != NULL) none.v0->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = ASSIGNMENT" << endl;
-		assignment.v0->print(tab+1);
-		assignment.v1->print(tab+1);
-		assignment.v2->print(tab+1);
+		if (assignment.v0 != NULL) assignment.v0->print(tab+1);
+		if (assignment.v1 != NULL) assignment.v1->print(tab+1);
+		if (assignment.v2 != NULL) assignment.v2->print(tab+1);
 		break;
 	}
 }
@@ -121,7 +121,7 @@ S_atomic_type_specifier::S_atomic_type_specifier (T_type_name a0) {
 void S_atomic_type_specifier::print(int tab) {
 	print_tab(tab);
 	cout << "+atomic_type_specifier" << endl;
-	v0->print(tab+1);
+	if (v0 != NULL) v0->print(tab+1);
 }
 S_binary_expression::S_binary_expression(T_binary_expression a0, T_binary_expression a1, int enum_kind) {
 	add.v0 = a0;
@@ -143,97 +143,97 @@ void S_binary_expression::print(int tab) {
 	switch(kind) {
 	case 0:
 		cout << " kind = ADD" << endl;
-		add.v0->print(tab+1);
-		add.v1->print(tab+1);
+		if (add.v0 != NULL) add.v0->print(tab+1);
+		if (add.v1 != NULL) add.v1->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = SUB" << endl;
-		sub.v0->print(tab+1);
-		sub.v1->print(tab+1);
+		if (sub.v0 != NULL) sub.v0->print(tab+1);
+		if (sub.v1 != NULL) sub.v1->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = BIT_AND" << endl;
-		bit_and.v0->print(tab+1);
-		bit_and.v1->print(tab+1);
+		if (bit_and.v0 != NULL) bit_and.v0->print(tab+1);
+		if (bit_and.v1 != NULL) bit_and.v1->print(tab+1);
 		break;
 	case 3:
 		cout << " kind = EQU" << endl;
-		equ.v0->print(tab+1);
-		equ.v1->print(tab+1);
+		if (equ.v0 != NULL) equ.v0->print(tab+1);
+		if (equ.v1 != NULL) equ.v1->print(tab+1);
 		break;
 	case 4:
 		cout << " kind = NEQ" << endl;
-		neq.v0->print(tab+1);
-		neq.v1->print(tab+1);
+		if (neq.v0 != NULL) neq.v0->print(tab+1);
+		if (neq.v1 != NULL) neq.v1->print(tab+1);
 		break;
 	case 5:
 		cout << " kind = BIT_XOR" << endl;
-		bit_xor.v0->print(tab+1);
-		bit_xor.v1->print(tab+1);
+		if (bit_xor.v0 != NULL) bit_xor.v0->print(tab+1);
+		if (bit_xor.v1 != NULL) bit_xor.v1->print(tab+1);
 		break;
 	case 6:
 		cout << " kind = BIT_OR" << endl;
-		bit_or.v0->print(tab+1);
-		bit_or.v1->print(tab+1);
+		if (bit_or.v0 != NULL) bit_or.v0->print(tab+1);
+		if (bit_or.v1 != NULL) bit_or.v1->print(tab+1);
 		break;
 	case 7:
 		cout << " kind = LOGIC_AND" << endl;
-		logic_and.v0->print(tab+1);
-		logic_and.v1->print(tab+1);
+		if (logic_and.v0 != NULL) logic_and.v0->print(tab+1);
+		if (logic_and.v1 != NULL) logic_and.v1->print(tab+1);
 		break;
 	case 8:
 		cout << " kind = LOGIC_OR" << endl;
-		logic_or.v0->print(tab+1);
-		logic_or.v1->print(tab+1);
+		if (logic_or.v0 != NULL) logic_or.v0->print(tab+1);
+		if (logic_or.v1 != NULL) logic_or.v1->print(tab+1);
 		break;
 	case 13:
 		cout << " kind = LTH" << endl;
-		lth.v0->print(tab+1);
-		lth.v1->print(tab+1);
+		if (lth.v0 != NULL) lth.v0->print(tab+1);
+		if (lth.v1 != NULL) lth.v1->print(tab+1);
 		break;
 	case 14:
 		cout << " kind = GTH" << endl;
-		gth.v0->print(tab+1);
-		gth.v1->print(tab+1);
+		if (gth.v0 != NULL) gth.v0->print(tab+1);
+		if (gth.v1 != NULL) gth.v1->print(tab+1);
 		break;
 	case 15:
 		cout << " kind = LTE" << endl;
-		lte.v0->print(tab+1);
-		lte.v1->print(tab+1);
+		if (lte.v0 != NULL) lte.v0->print(tab+1);
+		if (lte.v1 != NULL) lte.v1->print(tab+1);
 		break;
 	case 16:
 		cout << " kind = GTE" << endl;
-		gte.v0->print(tab+1);
-		gte.v1->print(tab+1);
+		if (gte.v0 != NULL) gte.v0->print(tab+1);
+		if (gte.v1 != NULL) gte.v1->print(tab+1);
 		break;
 	case 17:
 		cout << " kind = LEFT_SHIFT" << endl;
-		left_shift.v0->print(tab+1);
-		left_shift.v1->print(tab+1);
+		if (left_shift.v0 != NULL) left_shift.v0->print(tab+1);
+		if (left_shift.v1 != NULL) left_shift.v1->print(tab+1);
 		break;
 	case 18:
 		cout << " kind = RIGHT_SHIFT" << endl;
-		right_shift.v0->print(tab+1);
-		right_shift.v1->print(tab+1);
+		if (right_shift.v0 != NULL) right_shift.v0->print(tab+1);
+		if (right_shift.v1 != NULL) right_shift.v1->print(tab+1);
 		break;
 	case 10:
 		cout << " kind = MULT" << endl;
-		mult.v0->print(tab+1);
-		mult.v1->print(tab+1);
+		if (mult.v0 != NULL) mult.v0->print(tab+1);
+		if (mult.v1 != NULL) mult.v1->print(tab+1);
 		break;
 	case 11:
 		cout << " kind = DIV" << endl;
-		div.v0->print(tab+1);
-		div.v1->print(tab+1);
+		if (div.v0 != NULL) div.v0->print(tab+1);
+		if (div.v1 != NULL) div.v1->print(tab+1);
 		break;
 	case 12:
 		cout << " kind = MOD" << endl;
-		mod.v0->print(tab+1);
-		mod.v1->print(tab+1);
+		if (mod.v0 != NULL) mod.v0->print(tab+1);
+		if (mod.v1 != NULL) mod.v1->print(tab+1);
 		break;
 	case 9:
 		cout << " kind = NONE" << endl;
-		none.v0->print(tab+1);
+		if (none.v0 != NULL) none.v0->print(tab+1);
 		break;
 	}
 }
@@ -251,11 +251,11 @@ void S_block_item::print(int tab) {
 	switch(kind) {
 	case 0:
 		cout << " kind = DECLARATION" << endl;
-		declaration.v0->print(tab+1);
+		if (declaration.v0 != NULL) declaration.v0->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = STATEMENT" << endl;
-		statement.v0->print(tab+1);
+		if (statement.v0 != NULL) statement.v0->print(tab+1);
 		break;
 	}
 }
@@ -266,8 +266,8 @@ S_block_item_list::S_block_item_list(T_block_item a0, T_block_item_list a1){
 void S_block_item_list::print(int tab) {
 	print_tab(tab);
 	cout << "+block_item_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_compound_statement::S_compound_statement(T_block_item_list a0){
 	v0 = a0;
@@ -275,7 +275,7 @@ S_compound_statement::S_compound_statement(T_block_item_list a0){
 void S_compound_statement::print(int tab) {
 	print_tab(tab);
 	cout << "+compound_statement" << endl;
-	if (v0 != NULL) v0->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
 }
 S_conditional_expression::S_conditional_expression(T_binary_expression a0) {
 	binary.v0 = a0;
@@ -293,13 +293,13 @@ void S_conditional_expression::print(int tab) {
 	switch(kind) {
 	case 0:
 		cout << " kind = BINARY" << endl;
-		binary.v0->print(tab+1);
+		if (binary.v0 != NULL) binary.v0->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = TERRINARY" << endl;
-		terrinary.v0->print(tab+1);
-		terrinary.v1->print(tab+1);
-		terrinary.v2->print(tab+1);
+		if (terrinary.v0 != NULL) terrinary.v0->print(tab+1);
+		if (terrinary.v1 != NULL) terrinary.v1->print(tab+1);
+		if (terrinary.v2 != NULL) terrinary.v2->print(tab+1);
 		break;
 	}
 }
@@ -339,7 +339,7 @@ S_constant_expression::S_constant_expression (T_conditional_expression a0) {
 void S_constant_expression::print(int tab) {
 	print_tab(tab);
 	cout << "+constant_expression" << endl;
-	v0->print(tab+1);
+	if (v0 != NULL) v0->print(tab+1);
 }
 S_declaration::S_declaration(T_declaration_specifiers a0, T_init_declarator_list a1) {
 	normal.v0 = a0;
@@ -347,8 +347,8 @@ S_declaration::S_declaration(T_declaration_specifiers a0, T_init_declarator_list
 	kind = NORMAL;
 }
 S_declaration::S_declaration(T_static_assert_declaration a0) {
-	static_assert.v0 = a0;
-	kind = STATIC_ASSERT;
+	static_assert_.v0 = a0;
+	kind = STATIC_ASSERT_;
 }
 void S_declaration::print(int tab) {
 	print_tab(tab);
@@ -356,12 +356,12 @@ void S_declaration::print(int tab) {
 	switch(kind) {
 	case 0:
 		cout << " kind = NORMAL" << endl;
-		normal.v0->print(tab+1);
-		normal.v1->print(tab+1);
+		if (normal.v0 != NULL) normal.v0->print(tab+1);
+		if (normal.v1 != NULL) normal.v1->print(tab+1);
 		break;
 	case 1:
-		cout << " kind = STATIC_ASSERT" << endl;
-		static_assert.v0->print(tab+1);
+		cout << " kind = STATIC_ASSERT_" << endl;
+		if (static_assert_.v0 != NULL) static_assert_.v0->print(tab+1);
 		break;
 	}
 }
@@ -372,8 +372,8 @@ S_declaration_list::S_declaration_list(T_declaration a0, T_declaration_list a1){
 void S_declaration_list::print(int tab) {
 	print_tab(tab);
 	cout << "+declaration_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_declaration_specifiers::S_declaration_specifiers(T_alignment_specifier a0, T_declaration_specifiers a1) {
 	alightment_spec.v0 = a0;
@@ -406,28 +406,28 @@ void S_declaration_specifiers::print(int tab) {
 	switch(kind) {
 	case 4:
 		cout << " kind = ALIGHTMENT_SPEC" << endl;
-		alightment_spec.v0->print(tab+1);
-		alightment_spec.v1->print(tab+1);
+		if (alightment_spec.v0 != NULL) alightment_spec.v0->print(tab+1);
+		if (alightment_spec.v1 != NULL) alightment_spec.v1->print(tab+1);
 		break;
 	case 3:
 		cout << " kind = FUNCTION_SPEC" << endl;
-		function_spec.v0->print(tab+1);
-		function_spec.v1->print(tab+1);
+		if (function_spec.v0 != NULL) function_spec.v0->print(tab+1);
+		if (function_spec.v1 != NULL) function_spec.v1->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = STORAGE" << endl;
-		storage.v0->print(tab+1);
-		storage.v1->print(tab+1);
+		if (storage.v0 != NULL) storage.v0->print(tab+1);
+		if (storage.v1 != NULL) storage.v1->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = TYPE_QUAL" << endl;
-		type_qual.v0->print(tab+1);
-		type_qual.v1->print(tab+1);
+		if (type_qual.v0 != NULL) type_qual.v0->print(tab+1);
+		if (type_qual.v1 != NULL) type_qual.v1->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = TYPE_SPEC" << endl;
-		type_spec.v0->print(tab+1);
-		type_spec.v1->print(tab+1);
+		if (type_spec.v0 != NULL) type_spec.v0->print(tab+1);
+		if (type_spec.v1 != NULL) type_spec.v1->print(tab+1);
 		break;
 	}
 }
@@ -456,7 +456,7 @@ S_designation::S_designation (T_designator_list a0) {
 void S_designation::print(int tab) {
 	print_tab(tab);
 	cout << "+designation" << endl;
-	v0->print(tab+1);
+	if (v0 != NULL) v0->print(tab+1);
 }
 S_designator::S_designator(T_constant_expression a0) {
 	index.v0 = a0;
@@ -472,7 +472,7 @@ void S_designator::print(int tab) {
 	switch(kind) {
 	case 0:
 		cout << " kind = INDEX" << endl;
-		index.v0->print(tab+1);
+		if (index.v0 != NULL) index.v0->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = DOT" << endl;
@@ -488,8 +488,8 @@ S_designator_list::S_designator_list(T_designator a0, T_designator_list a1){
 void S_designator_list::print(int tab) {
 	print_tab(tab);
 	cout << "+designator_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_direct_abstract_declarator::S_direct_abstract_declarator(int enum_kind) {
 	kind = static_cast<typeof(kind)>(enum_kind);
@@ -555,88 +555,88 @@ void S_direct_abstract_declarator::print(int tab) {
 		break;
 	case 0:
 		cout << " kind = DECL1" << endl;
-		decl1.v0->print(tab+1);
+		if (decl1.v0 != NULL) decl1.v0->print(tab+1);
 		break;
 	case 4:
 		cout << " kind = DECL5" << endl;
-		decl5.v0->print(tab+1);
+		if (decl5.v0 != NULL) decl5.v0->print(tab+1);
 		break;
 	case 8:
 		cout << " kind = DECL9" << endl;
-		decl9.v0->print(tab+1);
+		if (decl9.v0 != NULL) decl9.v0->print(tab+1);
 		break;
 	case 9:
 		cout << " kind = DECL10" << endl;
-		decl10.v0->print(tab+1);
+		if (decl10.v0 != NULL) decl10.v0->print(tab+1);
 		break;
 	case 10:
 		cout << " kind = DECL11" << endl;
-		decl11.v0->print(tab+1);
+		if (decl11.v0 != NULL) decl11.v0->print(tab+1);
 		break;
 	case 19:
 		cout << " kind = DECL20" << endl;
-		decl20.v0->print(tab+1);
+		if (decl20.v0 != NULL) decl20.v0->print(tab+1);
 		break;
 	case 12:
 		cout << " kind = DECL13" << endl;
-		decl13.v0->print(tab+1);
-		decl13.v1->print(tab+1);
+		if (decl13.v0 != NULL) decl13.v0->print(tab+1);
+		if (decl13.v1 != NULL) decl13.v1->print(tab+1);
 		break;
 	case 16:
 		cout << " kind = DECL17" << endl;
-		decl17.v0->print(tab+1);
-		decl17.v1->print(tab+1);
+		if (decl17.v0 != NULL) decl17.v0->print(tab+1);
+		if (decl17.v1 != NULL) decl17.v1->print(tab+1);
 		break;
 	case 20:
 		cout << " kind = DECL21" << endl;
-		decl21.v0->print(tab+1);
-		decl21.v1->print(tab+1);
+		if (decl21.v0 != NULL) decl21.v0->print(tab+1);
+		if (decl21.v1 != NULL) decl21.v1->print(tab+1);
 		break;
 	case 15:
 		cout << " kind = DECL16" << endl;
-		decl16.v0->print(tab+1);
-		decl16.v1->print(tab+1);
+		if (decl16.v0 != NULL) decl16.v0->print(tab+1);
+		if (decl16.v1 != NULL) decl16.v1->print(tab+1);
 		break;
 	case 11:
 		cout << " kind = DECL12" << endl;
-		decl12.v0->print(tab+1);
-		decl12.v1->print(tab+1);
-		decl12.v2->print(tab+1);
+		if (decl12.v0 != NULL) decl12.v0->print(tab+1);
+		if (decl12.v1 != NULL) decl12.v1->print(tab+1);
+		if (decl12.v2 != NULL) decl12.v2->print(tab+1);
 		break;
 	case 13:
 		cout << " kind = DECL14" << endl;
-		decl14.v0->print(tab+1);
-		decl14.v1->print(tab+1);
-		decl14.v2->print(tab+1);
+		if (decl14.v0 != NULL) decl14.v0->print(tab+1);
+		if (decl14.v1 != NULL) decl14.v1->print(tab+1);
+		if (decl14.v2 != NULL) decl14.v2->print(tab+1);
 		break;
 	case 14:
 		cout << " kind = DECL15" << endl;
-		decl15.v0->print(tab+1);
-		decl15.v1->print(tab+1);
-		decl15.v2->print(tab+1);
+		if (decl15.v0 != NULL) decl15.v0->print(tab+1);
+		if (decl15.v1 != NULL) decl15.v1->print(tab+1);
+		if (decl15.v2 != NULL) decl15.v2->print(tab+1);
 		break;
 	case 18:
 		cout << " kind = DECL19" << endl;
-		decl19.v0->print(tab+1);
+		if (decl19.v0 != NULL) decl19.v0->print(tab+1);
 		break;
 	case 7:
 		cout << " kind = DECL8" << endl;
-		decl8.v0->print(tab+1);
+		if (decl8.v0 != NULL) decl8.v0->print(tab+1);
 		break;
 	case 3:
 		cout << " kind = DECL4" << endl;
-		decl4.v0->print(tab+1);
-		decl4.v1->print(tab+1);
+		if (decl4.v0 != NULL) decl4.v0->print(tab+1);
+		if (decl4.v1 != NULL) decl4.v1->print(tab+1);
 		break;
 	case 5:
 		cout << " kind = DECL6" << endl;
-		decl6.v0->print(tab+1);
-		decl6.v1->print(tab+1);
+		if (decl6.v0 != NULL) decl6.v0->print(tab+1);
+		if (decl6.v1 != NULL) decl6.v1->print(tab+1);
 		break;
 	case 6:
 		cout << " kind = DECL7" << endl;
-		decl7.v0->print(tab+1);
-		decl7.v1->print(tab+1);
+		if (decl7.v0 != NULL) decl7.v0->print(tab+1);
+		if (decl7.v1 != NULL) decl7.v1->print(tab+1);
 		break;
 	}
 }
@@ -654,9 +654,9 @@ S_direct_declarator::S_direct_declarator(T_direct_declarator a0, T_assignment_ex
 	kind = static_cast<typeof(kind)>(enum_kind);
 }
 S_direct_declarator::S_direct_declarator(T_direct_declarator a0, T_identifier_list a1) {
-	decl12.v0 = a0;
-	decl12.v1 = a1;
-	kind = DECL12;
+	decl13.v0 = a0;
+	decl13.v1 = a1;
+	kind = DECL13;
 }
 S_direct_declarator::S_direct_declarator(T_direct_declarator a0, T_parameter_type_list a1) {
 	decl11.v0 = a0;
@@ -684,67 +684,67 @@ void S_direct_declarator::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = DECL1" << endl;
-		decl1.v0->print(tab+1);
+		if (decl1.v0 != NULL) decl1.v0->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = DECL2" << endl;
-		decl2.v0->print(tab+1);
+		if (decl2.v0 != NULL) decl2.v0->print(tab+1);
 		break;
 	case 3:
 		cout << " kind = DECL3" << endl;
-		decl3.v0->print(tab+1);
+		if (decl3.v0 != NULL) decl3.v0->print(tab+1);
 		break;
 	case 12:
 		cout << " kind = DECL12" << endl;
-		decl12.v0->print(tab+1);
+		if (decl12.v0 != NULL) decl12.v0->print(tab+1);
 		break;
 	case 5:
 		cout << " kind = DECL5" << endl;
-		decl5.v0->print(tab+1);
-		decl5.v1->print(tab+1);
+		if (decl5.v0 != NULL) decl5.v0->print(tab+1);
+		if (decl5.v1 != NULL) decl5.v1->print(tab+1);
 		break;
 	case 10:
 		cout << " kind = DECL10" << endl;
-		decl10.v0->print(tab+1);
-		decl10.v1->print(tab+1);
+		if (decl10.v0 != NULL) decl10.v0->print(tab+1);
+		if (decl10.v1 != NULL) decl10.v1->print(tab+1);
 		break;
 	case 13:
-		cout << " kind = DECL12" << endl;
-		decl12.v0->print(tab+1);
-		decl12.v1->print(tab+1);
+		cout << " kind = DECL13" << endl;
+		if (decl13.v0 != NULL) decl13.v0->print(tab+1);
+		if (decl13.v1 != NULL) decl13.v1->print(tab+1);
 		break;
 	case 11:
 		cout << " kind = DECL11" << endl;
-		decl11.v0->print(tab+1);
-		decl11.v1->print(tab+1);
+		if (decl11.v0 != NULL) decl11.v0->print(tab+1);
+		if (decl11.v1 != NULL) decl11.v1->print(tab+1);
 		break;
 	case 6:
 		cout << " kind = DECL6" << endl;
-		decl6.v0->print(tab+1);
-		decl6.v1->print(tab+1);
+		if (decl6.v0 != NULL) decl6.v0->print(tab+1);
+		if (decl6.v1 != NULL) decl6.v1->print(tab+1);
 		break;
 	case 9:
 		cout << " kind = DECL9" << endl;
-		decl9.v0->print(tab+1);
-		decl9.v1->print(tab+1);
+		if (decl9.v0 != NULL) decl9.v0->print(tab+1);
+		if (decl9.v1 != NULL) decl9.v1->print(tab+1);
 		break;
 	case 4:
 		cout << " kind = DECL4" << endl;
-		decl4.v0->print(tab+1);
-		decl4.v1->print(tab+1);
-		decl4.v2->print(tab+1);
+		if (decl4.v0 != NULL) decl4.v0->print(tab+1);
+		if (decl4.v1 != NULL) decl4.v1->print(tab+1);
+		if (decl4.v2 != NULL) decl4.v2->print(tab+1);
 		break;
 	case 7:
 		cout << " kind = DECL7" << endl;
-		decl7.v0->print(tab+1);
-		decl7.v1->print(tab+1);
-		decl7.v2->print(tab+1);
+		if (decl7.v0 != NULL) decl7.v0->print(tab+1);
+		if (decl7.v1 != NULL) decl7.v1->print(tab+1);
+		if (decl7.v2 != NULL) decl7.v2->print(tab+1);
 		break;
 	case 8:
 		cout << " kind = DECL8" << endl;
-		decl8.v0->print(tab+1);
-		decl8.v1->print(tab+1);
-		decl8.v2->print(tab+1);
+		if (decl8.v0 != NULL) decl8.v0->print(tab+1);
+		if (decl8.v1 != NULL) decl8.v1->print(tab+1);
+		if (decl8.v2 != NULL) decl8.v2->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = IDENTIFIER" << endl;
@@ -792,8 +792,8 @@ S_enumerator::S_enumerator(T_enumeration_constant a0, T_constant_expression a1){
 void S_enumerator::print(int tab) {
 	print_tab(tab);
 	cout << "+enumerator" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_enumerator_list::S_enumerator_list(T_enumerator a0, T_enumerator_list a1){
 	v0 = a0;
@@ -802,8 +802,8 @@ S_enumerator_list::S_enumerator_list(T_enumerator a0, T_enumerator_list a1){
 void S_enumerator_list::print(int tab) {
 	print_tab(tab);
 	cout << "+enumerator_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_expression::S_expression(T_assignment_expression a0, T_expression a1){
 	v0 = a0;
@@ -812,8 +812,8 @@ S_expression::S_expression(T_assignment_expression a0, T_expression a1){
 void S_expression::print(int tab) {
 	print_tab(tab);
 	cout << "+expression" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_expression_statement::S_expression_statement(T_expression a0){
 	v0 = a0;
@@ -821,7 +821,7 @@ S_expression_statement::S_expression_statement(T_expression a0){
 void S_expression_statement::print(int tab) {
 	print_tab(tab);
 	cout << "+expression_statement" << endl;
-	if (v0 != NULL) v0->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
 }
 S_external_declaration::S_external_declaration(T_declaration a0) {
 	declaration.v0 = a0;
@@ -837,11 +837,11 @@ void S_external_declaration::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = DECLARATION" << endl;
-		declaration.v0->print(tab+1);
+		if (declaration.v0 != NULL) declaration.v0->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = FUNCTION_DEFINITION" << endl;
-		function_definition.v0->print(tab+1);
+		if (function_definition.v0 != NULL) function_definition.v0->print(tab+1);
 		break;
 	}
 }
@@ -854,10 +854,10 @@ S_function_definition::S_function_definition(T_declaration_specifiers a0, T_decl
 void S_function_definition::print(int tab) {
 	print_tab(tab);
 	cout << "+function_definition" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
-	if (v2 != NULL) v2->print(tab+1);
-	if (v3 != NULL) v3->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
+if (v2 != NULL) v2->print(tab+1);
+if (v3 != NULL) v3->print(tab+1);
 }
 S_function_specifier::S_function_specifier(int enum_kind){
 	kind = static_cast<typeof(kind)>(enum_kind);
@@ -881,8 +881,8 @@ S_generic_assoc_list::S_generic_assoc_list(T_generic_association a0, T_generic_a
 void S_generic_assoc_list::print(int tab) {
 	print_tab(tab);
 	cout << "+generic_assoc_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_generic_association::S_generic_association(T_type_name a0, T_assignment_expression a1, int enum_kind){
 	v0 = a0;
@@ -910,8 +910,8 @@ S_generic_selection::S_generic_selection (T_assignment_expression a0, T_generic_
 void S_generic_selection::print(int tab) {
 	print_tab(tab);
 	cout << "+generic_selection" << endl;
-	v0->print(tab+1);
-	v1->print(tab+1);
+	if (v0 != NULL) v0->print(tab+1);
+	if (v1 != NULL) v1->print(tab+1);
 }
 S_identifier_list::S_identifier_list(T_strval a0, T_identifier_list a1){
 	v0 = a0;
@@ -922,7 +922,7 @@ void S_identifier_list::print(int tab) {
 	cout << "+identifier_list" << endl;
 	print_tab(tab+1);
 	cout << v0 << endl;
-	if (v1 != NULL) v1->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_init_declarator::S_init_declarator(T_declarator a0, T_initializer a1, int enum_kind){
 	v0 = a0;
@@ -950,8 +950,8 @@ S_init_declarator_list::S_init_declarator_list(T_init_declarator a0, T_init_decl
 void S_init_declarator_list::print(int tab) {
 	print_tab(tab);
 	cout << "+init_declarator_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_initializer::S_initializer(T_assignment_expression a0) {
 	ass_expr.v0 = a0;
@@ -967,11 +967,11 @@ void S_initializer::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = ASS_EXPR" << endl;
-		ass_expr.v0->print(tab+1);
+		if (ass_expr.v0 != NULL) ass_expr.v0->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = INIT_LIST" << endl;
-		init_list.v0->print(tab+1);
+		if (init_list.v0 != NULL) init_list.v0->print(tab+1);
 		break;
 	}
 }
@@ -983,9 +983,9 @@ S_initializer_list::S_initializer_list(T_designation a0, T_initializer a1, T_ini
 void S_initializer_list::print(int tab) {
 	print_tab(tab);
 	cout << "+initializer_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
-	if (v2 != NULL) v2->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
+if (v2 != NULL) v2->print(tab+1);
 }
 S_iteration_statement::S_iteration_statement(T_declaration a0, T_expression_statement a1, T_expression a2, T_statement a3) {
 	for4.v0 = a0;
@@ -1029,39 +1029,39 @@ void S_iteration_statement::print(int tab) {
 	switch(kind) {
 	case 5:
 		cout << " kind = FOR4" << endl;
-		for4.v0->print(tab+1);
-		for4.v1->print(tab+1);
-		for4.v2->print(tab+1);
-		for4.v3->print(tab+1);
+		if (for4.v0 != NULL) for4.v0->print(tab+1);
+		if (for4.v1 != NULL) for4.v1->print(tab+1);
+		if (for4.v2 != NULL) for4.v2->print(tab+1);
+		if (for4.v3 != NULL) for4.v3->print(tab+1);
 		break;
 	case 4:
 		cout << " kind = FOR3" << endl;
-		for3.v0->print(tab+1);
-		for3.v1->print(tab+1);
-		for3.v2->print(tab+1);
+		if (for3.v0 != NULL) for3.v0->print(tab+1);
+		if (for3.v1 != NULL) for3.v1->print(tab+1);
+		if (for3.v2 != NULL) for3.v2->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = WHILE_" << endl;
-		while_.v0->print(tab+1);
-		while_.v1->print(tab+1);
+		if (while_.v0 != NULL) while_.v0->print(tab+1);
+		if (while_.v1 != NULL) while_.v1->print(tab+1);
 		break;
 	case 3:
 		cout << " kind = FOR2" << endl;
-		for2.v0->print(tab+1);
-		for2.v1->print(tab+1);
-		for2.v2->print(tab+1);
-		for2.v3->print(tab+1);
+		if (for2.v0 != NULL) for2.v0->print(tab+1);
+		if (for2.v1 != NULL) for2.v1->print(tab+1);
+		if (for2.v2 != NULL) for2.v2->print(tab+1);
+		if (for2.v3 != NULL) for2.v3->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = FOR1" << endl;
-		for1.v0->print(tab+1);
-		for1.v1->print(tab+1);
-		for1.v2->print(tab+1);
+		if (for1.v0 != NULL) for1.v0->print(tab+1);
+		if (for1.v1 != NULL) for1.v1->print(tab+1);
+		if (for1.v2 != NULL) for1.v2->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = DO_WHILE" << endl;
-		do_while.v0->print(tab+1);
-		do_while.v1->print(tab+1);
+		if (do_while.v0 != NULL) do_while.v0->print(tab+1);
+		if (do_while.v1 != NULL) do_while.v1->print(tab+1);
 		break;
 	}
 }
@@ -1073,8 +1073,8 @@ S_jump_statement::S_jump_statement(T_expression a0) {
 	kind = RETUR_EXPR;
 }
 S_jump_statement::S_jump_statement(T_strval a0) {
-	goto.v0 = a0;
-	kind = GOTO;
+	goto_.v0 = a0;
+	kind = GOTO_;
 }
 void S_jump_statement::print(int tab) {
 	print_tab(tab);
@@ -1091,12 +1091,12 @@ void S_jump_statement::print(int tab) {
 		break;
 	case 4:
 		cout << " kind = RETUR_EXPR" << endl;
-		retur_expr.v0->print(tab+1);
+		if (retur_expr.v0 != NULL) retur_expr.v0->print(tab+1);
 		break;
 	case 0:
-		cout << " kind = GOTO" << endl;
+		cout << " kind = GOTO_" << endl;
 	print_tab(tab+1);
-	cout << goto.v0 << endl;
+	cout << goto_.v0 << endl;
 		break;
 	}
 }
@@ -1120,18 +1120,18 @@ void S_labeled_statement::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = CASE_" << endl;
-		case_.v0->print(tab+1);
-		case_.v1->print(tab+1);
+		if (case_.v0 != NULL) case_.v0->print(tab+1);
+		if (case_.v1 != NULL) case_.v1->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = DEFAULT_" << endl;
-		default_.v0->print(tab+1);
+		if (default_.v0 != NULL) default_.v0->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = IDENTIFIER" << endl;
 	print_tab(tab+1);
 	cout << identifier.v0 << endl;
-		identifier.v1->print(tab+1);
+		if (identifier.v1 != NULL) identifier.v1->print(tab+1);
 		break;
 	}
 }
@@ -1155,17 +1155,17 @@ void S_parameter_declaration::print(int tab) {
 	switch(kind) {
 	case 2:
 		cout << " kind = NONE" << endl;
-		none.v0->print(tab+1);
+		if (none.v0 != NULL) none.v0->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = ABST_DECL" << endl;
-		abst_decl.v0->print(tab+1);
-		abst_decl.v1->print(tab+1);
+		if (abst_decl.v0 != NULL) abst_decl.v0->print(tab+1);
+		if (abst_decl.v1 != NULL) abst_decl.v1->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = DECL" << endl;
-		decl.v0->print(tab+1);
-		decl.v1->print(tab+1);
+		if (decl.v0 != NULL) decl.v0->print(tab+1);
+		if (decl.v1 != NULL) decl.v1->print(tab+1);
 		break;
 	}
 }
@@ -1176,8 +1176,8 @@ S_parameter_list::S_parameter_list(T_parameter_declaration a0, T_parameter_list 
 void S_parameter_list::print(int tab) {
 	print_tab(tab);
 	cout << "+parameter_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_parameter_type_list::S_parameter_type_list(T_parameter_list a0, int enum_kind){
 	v0 = a0;
@@ -1203,8 +1203,8 @@ S_pointer::S_pointer(T_type_qualifier_list a0, T_pointer a1){
 void S_pointer::print(int tab) {
 	print_tab(tab);
 	cout << "+pointer" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_primary_expression::S_primary_expression(T_constant a0) {
 	constant.v0 = a0;
@@ -1232,19 +1232,19 @@ void S_primary_expression::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = CONSTANT" << endl;
-		constant.v0->print(tab+1);
+		if (constant.v0 != NULL) constant.v0->print(tab+1);
 		break;
 	case 3:
 		cout << " kind = BRACKETED_EXPR" << endl;
-		bracketed_expr.v0->print(tab+1);
+		if (bracketed_expr.v0 != NULL) bracketed_expr.v0->print(tab+1);
 		break;
 	case 4:
 		cout << " kind = GENERIC_SEL" << endl;
-		generic_sel.v0->print(tab+1);
+		if (generic_sel.v0 != NULL) generic_sel.v0->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = STRING_" << endl;
-		string_.v0->print(tab+1);
+		if (string_.v0 != NULL) string_.v0->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = IDENTIFIER" << endl;
@@ -1270,19 +1270,19 @@ void S_selection_statement::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = IF_" << endl;
-		if_.v0->print(tab+1);
-		if_.v1->print(tab+1);
+		if (if_.v0 != NULL) if_.v0->print(tab+1);
+		if (if_.v1 != NULL) if_.v1->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = SWITCH_" << endl;
-		switch_.v0->print(tab+1);
-		switch_.v1->print(tab+1);
+		if (switch_.v0 != NULL) switch_.v0->print(tab+1);
+		if (switch_.v1 != NULL) switch_.v1->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = IF_ELSE" << endl;
-		if_else.v0->print(tab+1);
-		if_else.v1->print(tab+1);
-		if_else.v2->print(tab+1);
+		if (if_else.v0 != NULL) if_else.v0->print(tab+1);
+		if (if_else.v1 != NULL) if_else.v1->print(tab+1);
+		if (if_else.v2 != NULL) if_else.v2->print(tab+1);
 		break;
 	}
 }
@@ -1310,21 +1310,21 @@ void S_specifier_qualifier_list::print(int tab) {
 	switch(kind) {
 	case 3:
 		cout << " kind = QUAL_END" << endl;
-		qual_end.v0->print(tab+1);
+		if (qual_end.v0 != NULL) qual_end.v0->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = QUAL" << endl;
-		qual.v0->print(tab+1);
-		qual.v1->print(tab+1);
+		if (qual.v0 != NULL) qual.v0->print(tab+1);
+		if (qual.v1 != NULL) qual.v1->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = SPEC_END" << endl;
-		spec_end.v0->print(tab+1);
+		if (spec_end.v0 != NULL) spec_end.v0->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = SPEC" << endl;
-		spec.v0->print(tab+1);
-		spec.v1->print(tab+1);
+		if (spec.v0 != NULL) spec.v0->print(tab+1);
+		if (spec.v1 != NULL) spec.v1->print(tab+1);
 		break;
 	}
 }
@@ -1358,27 +1358,27 @@ void S_statement::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = COMPOUND" << endl;
-		compound.v0->print(tab+1);
+		if (compound.v0 != NULL) compound.v0->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = EXPRESSION" << endl;
-		expression.v0->print(tab+1);
+		if (expression.v0 != NULL) expression.v0->print(tab+1);
 		break;
 	case 4:
 		cout << " kind = ITERATION" << endl;
-		iteration.v0->print(tab+1);
+		if (iteration.v0 != NULL) iteration.v0->print(tab+1);
 		break;
 	case 5:
 		cout << " kind = JUMP" << endl;
-		jump.v0->print(tab+1);
+		if (jump.v0 != NULL) jump.v0->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = LABELED" << endl;
-		labeled.v0->print(tab+1);
+		if (labeled.v0 != NULL) labeled.v0->print(tab+1);
 		break;
 	case 3:
 		cout << " kind = SELECTION" << endl;
-		selection.v0->print(tab+1);
+		if (selection.v0 != NULL) selection.v0->print(tab+1);
 		break;
 	}
 }
@@ -1389,7 +1389,7 @@ S_static_assert_declaration::S_static_assert_declaration (T_constant_expression 
 void S_static_assert_declaration::print(int tab) {
 	print_tab(tab);
 	cout << "+static_assert_declaration" << endl;
-	v0->print(tab+1);
+	if (v0 != NULL) v0->print(tab+1);
 	print_tab(tab+1);
 	cout << v1 << endl;
 }
@@ -1457,16 +1457,16 @@ void S_struct_declaration::print(int tab) {
 	switch(kind) {
 	case 0:
 		cout << " kind = SPEC_QUAL" << endl;
-		spec_qual.v0->print(tab+1);
+		if (spec_qual.v0 != NULL) spec_qual.v0->print(tab+1);
 		break;
 	case 1:
 		cout << " kind = SPEC_QUAL_DECL" << endl;
-		spec_qual_decl.v0->print(tab+1);
-		spec_qual_decl.v1->print(tab+1);
+		if (spec_qual_decl.v0 != NULL) spec_qual_decl.v0->print(tab+1);
+		if (spec_qual_decl.v1 != NULL) spec_qual_decl.v1->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = STATIC_ASSERT_" << endl;
-		static_assert_.v0->print(tab+1);
+		if (static_assert_.v0 != NULL) static_assert_.v0->print(tab+1);
 		break;
 	}
 }
@@ -1477,8 +1477,8 @@ S_struct_declaration_list::S_struct_declaration_list(T_struct_declaration a0, T_
 void S_struct_declaration_list::print(int tab) {
 	print_tab(tab);
 	cout << "+struct_declaration_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_struct_declarator::S_struct_declarator(T_constant_expression a0, T_declarator a1, int enum_kind){
 	v0 = a0;
@@ -1509,8 +1509,8 @@ S_struct_declarator_list::S_struct_declarator_list(T_struct_declarator a0, T_str
 void S_struct_declarator_list::print(int tab) {
 	print_tab(tab);
 	cout << "+struct_declarator_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_struct_or_union::S_struct_or_union(int enum_kind){
 	kind = static_cast<typeof(kind)>(enum_kind);
@@ -1559,8 +1559,8 @@ S_translation_unit::S_translation_unit(T_external_declaration a0, T_translation_
 void S_translation_unit::print(int tab) {
 	print_tab(tab);
 	cout << "+translation_unit" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_type_name::S_type_name(T_specifier_qualifier_list a0, T_abstract_declarator a1){
 	v0 = a0;
@@ -1569,8 +1569,8 @@ S_type_name::S_type_name(T_specifier_qualifier_list a0, T_abstract_declarator a1
 void S_type_name::print(int tab) {
 	print_tab(tab);
 	cout << "+type_name" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_type_qualifier::S_type_qualifier(int enum_kind){
 	kind = static_cast<typeof(kind)>(enum_kind);
@@ -1600,8 +1600,8 @@ S_type_qualifier_list::S_type_qualifier_list(T_type_qualifier a0, T_type_qualifi
 void S_type_qualifier_list::print(int tab) {
 	print_tab(tab);
 	cout << "+type_qualifier_list" << endl;
-	if (v0 != NULL) v0->print(tab+1);
-	if (v1 != NULL) v1->print(tab+1);
+if (v0 != NULL) v0->print(tab+1);
+if (v1 != NULL) v1->print(tab+1);
 }
 S_type_specifier::S_type_specifier(int enum_kind) {
 	kind = static_cast<typeof(kind)>(enum_kind);
@@ -1663,15 +1663,15 @@ void S_type_specifier::print(int tab) {
 		break;
 	case 12:
 		cout << " kind = ATOMIC_" << endl;
-		atomic_.v0->print(tab+1);
+		if (atomic_.v0 != NULL) atomic_.v0->print(tab+1);
 		break;
 	case 14:
 		cout << " kind = ENUM_" << endl;
-		enum_.v0->print(tab+1);
+		if (enum_.v0 != NULL) enum_.v0->print(tab+1);
 		break;
 	case 13:
 		cout << " kind = STRUCT_OR_UNION" << endl;
-		struct_or_union.v0->print(tab+1);
+		if (struct_or_union.v0 != NULL) struct_or_union.v0->print(tab+1);
 		break;
 	}
 }
@@ -1723,72 +1723,72 @@ void S_unary_expression::print(int tab) {
 	switch(kind) {
 	case 1:
 		cout << " kind = NONE" << endl;
-		none.v0->print(tab+1);
+		if (none.v0 != NULL) none.v0->print(tab+1);
 		break;
 	case 13:
 		cout << " kind = SIZEOF_TYPE" << endl;
-		sizeof_type.v0->print(tab+1);
+		if (sizeof_type.v0 != NULL) sizeof_type.v0->print(tab+1);
 		break;
 	case 14:
-		cout << " kind = ALIGNOF" << endl;
-		alignof.v0->print(tab+1);
+		cout << " kind = ALIGNOF_" << endl;
+		if (alignof_.v0 != NULL) alignof_.v0->print(tab+1);
 		break;
 	case 8:
 		cout << " kind = CAST_LIST" << endl;
-		cast_list.v0->print(tab+1);
-		cast_list.v1->print(tab+1);
+		if (cast_list.v0 != NULL) cast_list.v0->print(tab+1);
+		if (cast_list.v1 != NULL) cast_list.v1->print(tab+1);
 		break;
 	case 0:
 		cout << " kind = CAST" << endl;
-		cast.v0->print(tab+1);
-		cast.v1->print(tab+1);
+		if (cast.v0 != NULL) cast.v0->print(tab+1);
+		if (cast.v1 != NULL) cast.v1->print(tab+1);
 		break;
 	case 6:
 		cout << " kind = POST_INC" << endl;
-		post_inc.v0->print(tab+1);
+		if (post_inc.v0 != NULL) post_inc.v0->print(tab+1);
 		break;
 	case 7:
 		cout << " kind = POST_DEC" << endl;
-		post_dec.v0->print(tab+1);
+		if (post_dec.v0 != NULL) post_dec.v0->print(tab+1);
 		break;
 	case 9:
 		cout << " kind = PRE_INC" << endl;
-		pre_inc.v0->print(tab+1);
+		if (pre_inc.v0 != NULL) pre_inc.v0->print(tab+1);
 		break;
 	case 10:
 		cout << " kind = PRE_DEC" << endl;
-		pre_dec.v0->print(tab+1);
+		if (pre_dec.v0 != NULL) pre_dec.v0->print(tab+1);
 		break;
 	case 12:
-		cout << " kind = SIZEOF" << endl;
-		sizeof.v0->print(tab+1);
+		cout << " kind = SIZEOF_" << endl;
+		if (sizeof_.v0 != NULL) sizeof_.v0->print(tab+1);
 		break;
 	case 3:
 		cout << " kind = CALL" << endl;
-		call.v0->print(tab+1);
-		call.v1->print(tab+1);
+		if (call.v0 != NULL) call.v0->print(tab+1);
+		if (call.v1 != NULL) call.v1->print(tab+1);
 		break;
 	case 2:
 		cout << " kind = INDEX" << endl;
-		index.v0->print(tab+1);
-		index.v1->print(tab+1);
+		if (index.v0 != NULL) index.v0->print(tab+1);
+		if (index.v1 != NULL) index.v1->print(tab+1);
 		break;
 	case 4:
 		cout << " kind = DOT" << endl;
-		dot.v0->print(tab+1);
+		if (dot.v0 != NULL) dot.v0->print(tab+1);
 	print_tab(tab+1);
 	cout << dot.v1 << endl;
 		break;
 	case 5:
 		cout << " kind = PTR" << endl;
-		ptr.v0->print(tab+1);
+		if (ptr.v0 != NULL) ptr.v0->print(tab+1);
 	print_tab(tab+1);
 	cout << ptr.v1 << endl;
 		break;
 	case 11:
 		cout << " kind = UNARY_OP" << endl;
-		unary_op.v0->print(tab+1);
-		unary_op.v1->print(tab+1);
+		if (unary_op.v0 != NULL) unary_op.v0->print(tab+1);
+		if (unary_op.v1 != NULL) unary_op.v1->print(tab+1);
 		break;
 	}
 }

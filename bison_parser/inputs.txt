@@ -34,7 +34,7 @@ y
 y
 u
 NORMAL
-STATIC_ASSERT
+STATIC_ASSERT_
 y
 declaration_specifiers
 y
@@ -215,7 +215,7 @@ DECL9
 DECL10
 DECL11
 DECL12
-DECL12
+DECL13
 y
 function_specifier
 y
@@ -393,7 +393,7 @@ y
 y
 y
 u
-GOTO
+GOTO_
 CONT
 BREAK_
 RETURN_
@@ -655,9 +655,9 @@ CAST_LIST
 PRE_INC
 PRE_DEC
 UNARY_OP
-SIZEOF
+SIZEOF_
 SIZEOF_TYPE
-ALIGNOF
+ALIGNOF_
 y
 argument_expression_list
 y
