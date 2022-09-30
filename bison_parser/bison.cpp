@@ -35,7 +35,7 @@ struct nt_features {
 string takeInputTillEnd() {
   string line;
   string func = "";
-  while (getline(inputs, line)) {
+  while (getline(cin, line)) {
     if (line == "end") {
       break;
     }
@@ -56,12 +56,14 @@ void merge_states() {
     cout << "enter name of merged non terminal. 0 to exit" << endl;
     string x;
     cin >> x;
-    if (x == "0") return;
+    inputs << x << endl;
+    if (x == "0") break;
     cout << "enter non terminals to merge, 0 to specify done" << endl;
     set<string> mnts;
     while (true) {
       string m;
       cin >> m;
+      inputs << m << endl;
       if (m == "0") {
 	break;
       }
@@ -98,6 +100,10 @@ void merge_states() {
     new_rule->remove_dups();
   }
   swap(non_terminals, merged_non_terminals);
+  for (auto& [st, k]: merged_non_terminals) {
+    cout << st << ", ";
+  }
+  cout << endl;
 }
 
 void create_ast () {
@@ -119,7 +125,7 @@ void create_ast () {
     }
     else if (nt == "1") {
       for (auto [s1, s2]: non_terminals){
-      cout << s1 << ", ";
+	cout << s1 << ", ";
       }
       cout << endl;
       continue;
@@ -827,6 +833,6 @@ main(int argc, char **argv)
     tr->print_pretty();
     cout << endl;
   }
-  // create_ast();
+  create_ast();
   exit(0);
 }
