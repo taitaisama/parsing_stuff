@@ -625,20 +625,21 @@ choose_option:
 	  red_acts[redstring] = "";
 	}
 	else {
+	  string action;
 	  if (rule->reductions->reds[i]->non_terminals_values.size() == 1) {
-	     string action = "{ $$ = new S_" + nt + "(); $$ = $$.add($1); }";
+	     action = "{ $$ = new S_" + nt + "(); $$ = $$.add($1); }";
 	  }
 	  else {
 	    if (prefix) {
-	      action += "{ $$ = $1.add($2); }";
+	      action = "{ $$ = $1.add($2); }";
 	    }
 	    else {
-	      action += "{ $$ = $2.add($1); }";
+	      action = "{ $$ = $2.add($1); }";
 	    }
 	  }
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = action;
 	}
-	red_act += " " + action + "\n";
-	red_acts[redstring] = action;
       }
       red_act += "        ;\n";
       cout << red_act << endl;
@@ -735,9 +736,9 @@ choose_option:
 	    }
 	  }
 	  action += "); }";
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = action;
 	}
-	red_act += " " + action + "\n";
-	red_acts[redstring] = action;
       }
       red_act += "        ;\n";
       cout << red_act << endl;
