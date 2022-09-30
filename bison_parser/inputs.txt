@@ -17,7 +17,7 @@ y
 u
 DECL_END
 DECL
-STATIC_ASSERT
+STATIC_ASSERT_
 y
 declaration_specifiers
 y
@@ -434,10 +434,10 @@ y
 y
 y
 u
-GOTO
-CONTINUE
-BREAK
-RETURN
+GOTO_
+CONTINUE_
+BREAK_
+RETURN_
 RETURN_EXPR
 y
 labeled_statement
@@ -446,8 +446,8 @@ y
 y
 u
 GOTO_LABEL
-CASE
-DEFAULT
+CASE_
+DEFAULT_
 y
 selection_statement
 y
@@ -623,7 +623,7 @@ y
 u
 SPEC_QUAL
 SPEC_QUAL_DECL
-STATIC_ASSERT
+STATIC_ASSERT_
 y
 struct_declarator_list
 y
@@ -669,9 +669,9 @@ NONE
 INC
 DEC
 UNARY_OP
-SIZEOF
+SIZEOF_
 SIZEOF_TYPE
-ALIGNOF
+ALIGNOF_
 y
 postfix_expression
 y
@@ -743,7 +743,7 @@ y
 y
 u
 INTEGER
-FLOAT
+FLOAT_
 ENUM_CONST
 y
 generic_selection

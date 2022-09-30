@@ -23,6 +23,8 @@ struct S_reduction {
   void print_pretty();
   string toString();
   int findIdx (string nt);
+  T_reduction dup();
+  void exchange (string ct, set<string> &cf);
 };
 
 struct S_reduction_list {
@@ -31,6 +33,8 @@ struct S_reduction_list {
   void add (T_reduction red);
   void print(int tab);
   void print_pretty();
+  T_reduction_list dup();
+  void remove_dups();
 };
 
 struct S_rule {
@@ -38,6 +42,8 @@ struct S_rule {
   string product;
   void print(int tab);
   void print_pretty();
+  T_rule dup();
+  void remove_dups();
 };
 
 struct S_rule_list {

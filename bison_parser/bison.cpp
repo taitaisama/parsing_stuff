@@ -12,6 +12,7 @@ extern "C" FILE *yyin;
 extern T_prog prog_ast;
 
 map<string, T_rule> non_terminals;
+map<string, string> mergers;
 map<string, int> nt_order;
 map<string, string> token_types;
 int indent = 85;
@@ -22,7 +23,7 @@ int indent = 85;
 ofstream ast_header{"ast.h"};
 ofstream ast_cpp{"ast.cpp"};
 ofstream bison_file{"reductions.y"};
-ifstream inputs{"inputs.txt"};
+ofstream inputs{"inputs.txt"};
 
 
 struct nt_features {
@@ -45,6 +46,60 @@ string takeInputTillEnd() {
   
 map<string, nt_features> done_nt_features;
 
+map<string, T_rule> merged_non_terminals;
+
+void merge_states() {
+  for (auto& [st, r]: non_terminals) {
+    merged_non_terminals[st] = r->dup();
+  }
+  while (true) {
+    cout << "enter name of merged non terminal. 0 to exit" << endl;
+    string x;
+    cin >> x;
+    if (x == "0") return;
+    cout << "enter non terminals to merge, 0 to specify done" << endl;
+    set<string> mnts;
+    while (true) {
+      string m;
+      cin >> m;
+      if (m == "0") {
+	break;
+      }
+      else {
+	if (merged_non_terminals.find(m) == merged_non_terminals.end()){
+	  cout << m + " not found" << endl;
+	  continue;
+	}
+	mnts.insert(m);
+      }
+    }
+    for (auto st: mnts) {
+      mergers[st] = x;
+    }
+    T_rule new_rule = new S_rule();
+    new_rule->product = x;
+    T_reduction_list nrl = new S_reduction_list();
+    new_rule->reductions = nrl;
+    for (auto nt: mnts) {
+      T_rule r = merged_non_terminals[nt];
+      for (auto re: r->reductions->reds) {
+	nrl->add(re->dup());
+      }
+    }
+    for (auto nt: mnts) {
+      merged_non_terminals.erase(nt);
+    }
+    merged_non_terminals[x] = new_rule;
+    for (auto &[st, tr]: merged_non_terminals) { 
+      for (auto r: tr->reductions->reds) {
+	r->exchange(x, mnts);
+      }
+    }
+    new_rule->remove_dups();
+  }
+  swap(non_terminals, merged_non_terminals);
+}
+
 void create_ast () {
   set<string> remaining_nts;
   set<string> done_nts;
@@ -56,8 +111,8 @@ void create_ast () {
     cout << endl;
     cout << "enter non-terminal name to evaluate, 0 to exit, 1 to list all non-terminals" << endl;
     string nt;
-    inputs >> nt;
-    // inputs << nt << endl;
+    cin >> nt;
+    inputs << nt << endl;
     
     if (nt == "0"){
       break;
@@ -82,8 +137,8 @@ void create_ast () {
       cout << "Do you want to include the following reduction? enter y/n" << endl;
       r->print_pretty();
       string ch;
-      inputs >> ch;
-      // inputs << ch << endl;
+      cin >> ch;
+      inputs << ch << endl;
       if (ch == "y"){
 	chosen_reds.insert(i);
       }
@@ -105,8 +160,8 @@ choose_option:
 
     cout << "enter implementation style" << endl;
     cout << "options: \nn for normal (use when only one type of reduction)\ne for enum\nm for multiple with no enum (also uses default constructor, useful for empty list situations)\nu for union+enum\nl for list\nd for do it yourself" << endl;
-    inputs >> op;
-    // inputs << op << endl;
+    cin >> op;
+    inputs << op << endl;
     
     if (op == "n"){
       if (chosen_reds.size() > 1){
@@ -145,8 +200,10 @@ choose_option:
       printer += "\tprint_tab(tab);\n";
       printer += "\tcout << \"+" + nt + "\" << endl;\n";
       for (int i = 0; i < v->non_terminals_values.size(); i ++) {
-	if (non_terminals.find(v->non_terminals_values[i]) == non_terminals.end())
+	if (non_terminals.find(v->non_terminals_values[i]) == non_terminals.end()) {
+	  printer += "\tprint_tab(tab+1);\n";
 	  printer += "\tcout << v" + to_string(i) + " << endl;\n";
+	}
 	else
 	  printer += "\tv" + to_string(i) + "->print(tab+1);\n";
       }
@@ -192,8 +249,8 @@ choose_option:
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
-	inputs >> en;
-	// inputs << en << endl;
+	cin >> en;
+	inputs << en << endl;
 	enums.push_back(en);
       }
       
@@ -256,8 +313,10 @@ choose_option:
       }
       printer += "\t}\n";
       for (int i = 0; i < all_types.size(); i ++) {
-	if (non_terminals.find(all_types[i]) == non_terminals.end())
+	if (non_terminals.find(all_types[i]) == non_terminals.end()) {
+	  printer += "\tprint_tab(tab+1);\n";
 	  printer += "\tcout << v" + to_string(i) + " << endl;\n";
+	}
 	else 
 	  printer += "\tif (v" + to_string(i) + " != NULL)\tv" + to_string(i) + "->print(tab+1);\n";
       }
@@ -306,8 +365,8 @@ choose_option:
       for (int cr: chosen_reds) {
 	rule->reductions->reds[cr]->print_pretty();
 	string en;
-	inputs >> en;
-	// inputs << en << endl;
+	cin >> en;
+	inputs << en << endl;
 	enums.push_back(en);
       }
 
@@ -414,8 +473,10 @@ choose_option:
 	  string temp = enums[vi];
 	  transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
 	  for (int i = 0; i < vec_types.size(); i ++) {
-	    if (non_terminals.find(vec_types[i]) == non_terminals.end())
+	    if (non_terminals.find(vec_types[i]) == non_terminals.end()) {
+	      printer += "\tprint_tab(tab+1);\n";
 	      printer += "\tcout << " + temp + ".v" + to_string(i) + " << endl;\n";
+	    }
 	    else
 	      printer += "\t\t" + temp + ".v" + to_string(i) + "->print(tab+1);\n";
 	  }
@@ -601,8 +662,10 @@ choose_option:
       printer += "\tprint_tab(tab);\n";
       printer += "\tcout << \"+" + nt + "\" << endl;\n";
       for (int i = 0; i < all_types.size(); i ++) {
-	if (non_terminals.find(all_types[i]) == non_terminals.end())
+	if (non_terminals.find(all_types[i]) == non_terminals.end()) {
+	  printer += "\tprint_tab(tab+1);\n";
 	  printer += "\tcout << v" + to_string(i) + " << endl;\n";
+	}
 	else
 	  printer += "\tif (v" + to_string(i) + " != NULL) v" + to_string(i) + "->print(tab+1);\n";
       }
@@ -660,8 +723,8 @@ choose_option:
     }
 
     cout << "do you want to confirm these generated fucntions? y/n" << endl;
-    string yn; inputs >> yn;
-    // inputs << yn << endl;
+    string yn; cin >> yn;
+    inputs << yn << endl;
     if (yn == "y") {
       cout << "ok, writing functions to file" << endl;
       for (auto cr: chosen_reds) {
@@ -758,7 +821,12 @@ main(int argc, char **argv)
   assert(yyin);
   int ret = yyparse();
   printf("retv = %d\n", ret);
-  prog_ast->print();
-  create_ast();
+  // prog_ast->print();
+  merge_states();
+  for (auto& [st, tr]: merged_non_terminals) {
+    tr->print_pretty();
+    cout << endl;
+  }
+  // create_ast();
   exit(0);
 }

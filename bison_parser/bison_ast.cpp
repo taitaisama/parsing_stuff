@@ -31,13 +31,83 @@ int S_reduction::findIdx (string nt) {
   return -1;
 }
 
+void S_reduction::exchange (string ct, set<string> &cf) {
+  for (auto& s: values) {
+    if (cf.find(s) != cf.end()) {
+      s = ct;
+    }
+  }
+  for (auto& s: non_terminals_values) {
+    if (cf.find(s) != cf.end()) {
+      s = ct;
+    }
+  }
+}
+
+void S_reduction_list::remove_dups() {
+  set<int> dup;
+  auto vec_comp = [] (vector<string> &a, vector<string> &b) {
+    if (a.size() == b.size()) {
+      for (int i = 0; i < a.size(); i ++){
+	if (a[i] != b[i]) return false;
+      }
+      return true;
+    }
+    return false;
+  };
+  for (int i = 0; i < reds.size(); i ++){
+    for (int j = i+1; j < reds.size(); j ++){
+      if (vec_comp(reds[j]->values, reds[i]->values)){
+	dup.insert(j);
+	cout << "inserting " << j << endl;
+      }
+    }
+  }
+  vector<T_reduction> new_reds;
+  for (int i = 0; i < reds.size(); i ++){
+    if (dup.find(i) == dup.end()){
+      new_reds.push_back(reds[i]);
+    }
+  }
+  reds = new_reds;
+}
+
+void S_rule::remove_dups() {
+  reductions->remove_dups();
+  vector<T_reduction> nrl;
+  for (auto tr: reductions->reds) {
+    if (tr->values.size() == 1 && tr->values[0] == product) {
+      continue;
+    }
+    nrl.push_back(tr);
+  }
+  reductions->reds = nrl;
+}
+
 S_reduction::S_reduction (){
   values = vector<string>();
+}
+
+T_reduction S_reduction::dup() {
+  T_reduction nr = new S_reduction();
+  for (string str: values) {
+    nr->add(str);
+  }
+  return nr;
 }
 
 S_reduction_list::S_reduction_list() {
   reds = vector<T_reduction>();
 }
+
+T_reduction_list S_reduction_list::dup() {
+  T_reduction_list nr = new S_reduction_list();
+  for (auto r: reds) {
+    nr->add(r->dup());
+  }
+  return nr;
+}
+
 void S_reduction_list::add (T_reduction red){
   reds.push_back(red);
 }
@@ -45,6 +115,7 @@ void S_reduction_list::add (T_reduction red){
 S_rule_list::S_rule_list () {
   rules = vector<T_rule>();
 }
+
 void S_rule_list::add (T_rule r){
   rules.push_back(r);
 }
@@ -110,6 +181,13 @@ void S_rule::print(int tab){
   cout << "+rule" << endl;
   print_str(tab+1, product, "product: ");
   reductions->print(tab+1);
+}
+
+T_rule S_rule::dup() {
+  T_rule nr = new S_rule();
+  nr->reductions = reductions->dup();
+  nr->product = product;
+  return nr;
 }
 
 void S_rule_list::print(int tab){
