@@ -243,6 +243,19 @@ string S_reduction::toString() {
   return a;
 }
 
+string S_reduction::toStringReplaced(map<string, string> &mp) {
+  string a = "";
+  for (string s: values){
+    if (mp.find(s) != mp.end()) {
+      a += mp[s] + " ";
+    }
+    else {
+      a += s + " ";
+    }
+  }
+  return a;
+}
+
 void S_reduction_list::print_pretty() {
   for (int i = 0; i < reds.size(); i ++){
     cout << "        ";

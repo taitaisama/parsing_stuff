@@ -16,20 +16,17 @@ map<string, string> mergers;
 map<string, int> nt_order;
 map<string, string> token_types;
 int indent = 85;
-// ofstream struct_names{"struct_names.h"};
-// ofstream typedefs{"typedefs.h"};
-// ofstream funcs{"functions.cpp"};
-// ofstream redrules{"reduction_rules.y"};
+
 ofstream ast_header{"ast.h"};
 ofstream ast_cpp{"ast.cpp"};
 ofstream bison_file{"reductions.y"};
 ofstream inputs{"inputs.txt"};
 
-
 struct nt_features {
   string struct_definition;
   string functions;
   string bison_actions;
+  map<string, string> red_acts;
 };
 
 string takeInputTillEnd() {
@@ -161,6 +158,7 @@ void create_ast () {
     string op;
     
     string con_struct_ed, functions, red_act;
+    map<string, string> red_acts;
 
 choose_option:
 
@@ -231,17 +229,23 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) {
+	  string action = "{ throw \"not implemented " + nt + "\"; }";
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = "";
+	}
 	else {
-	  red_act += " { $$ = new S_" + nt + "(";
+	  string action = "{ $$ = new S_" + nt + "(";
 	  int nums = 0;
 	  for (auto ntp: rule->reductions->reds[i]->non_terminal_pos) {
-	    red_act += "$" + to_string(ntp);
+	    action += "$" + to_string(ntp);
 	    nums ++;
 	    if (nums != rule->reductions->reds[i]->non_terminal_pos.size())
-	      red_act += ", ";
+	      action += ", ";
 	  }
-	  red_act += "); }\n";
+	  action += "); }";
+	  red_act += " " + action + "\n"; 
+	  red_acts[redstring] = action;
 	}
       }
       red_act += "        ;\n";
@@ -344,19 +348,25 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) {
+	  string action = "{ throw \"not implemented " + nt + "\"; }";
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = "";
+	}
 	else {
-	  red_act += " { $$ = new S_" + nt + "(";
+	  string action = "{ $$ = new S_" + nt + "(";
 	  for (auto ntp: all_types) {
 	    int x = rule->reductions->reds[i]->findIdx(ntp);
 	    if (x == -1) {
-	      red_act += "NULL, ";
+	      action += "NULL, ";
 	    }
 	    else {
-	      red_act += "$" + to_string(x) + ", ";
+	      action += "$" + to_string(x) + ", ";
 	    }
 	  }
-	  red_act += to_string(i) + "); }\n";
+	  action += to_string(i) + "); }";
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = action;
 	}
       }
       red_act += "        ;\n";
@@ -511,26 +521,32 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) {
+	  string action = "{ throw \"not implemented " + nt + "\"; }";
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = "";
+	}
 	else {
-	  red_act += " { $$ = new S_" + nt + "(";
+	  string action = "{ $$ = new S_" + nt + "(";
 	  auto & vei = constructor_map[rule->reductions->reds[i]->non_terminals_values];
 	  for (int k = 0; k < rule->reductions->reds[i]->non_terminals_values.size(); k ++) {
 	    auto ntp = rule->reductions->reds[i]->non_terminals_values[k];
 	    int x = rule->reductions->reds[i]->findIdx(ntp);
-	    red_act += "$" + to_string(x);
+	    action += "$" + to_string(x);
 	    if (k != rule->reductions->reds[i]->non_terminals_values.size()-1){
-	      red_act += ", ";
+	      action += ", ";
 	    }
 	  }
 	  if (vei.size() > 1) {
 	    if (rule->reductions->reds[i]->non_terminals_values.size() == 0)
-	      red_act += to_string(i) + "); }\n";
+	      action += to_string(i) + "); }\n";
 	    else
-	      red_act += ", " + to_string(i) + "); }\n";
+	      action += ", " + to_string(i) + "); }\n";
 	  }
 	  else
-	    red_act += "); }\n";
+	    action += "); }";
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = action;
 	}
       }
       red_act += "        ;\n";      
@@ -603,20 +619,26 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) {
+	  string action = "{ throw \"not implemented " + nt + "\"; }";
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = "";
+	}
 	else {
 	  if (rule->reductions->reds[i]->non_terminals_values.size() == 1) {
-	    red_act += "{ $$ = new S_" + nt + "(); $$ = $$.add($1); }\n";
+	     string action = "{ $$ = new S_" + nt + "(); $$ = $$.add($1); }";
 	  }
 	  else {
 	    if (prefix) {
-	      red_act += "{ $$ = $1.add($2); }\n";
+	      action += "{ $$ = $1.add($2); }";
 	    }
 	    else {
-	      red_act += "{ $$ = $2.add($1); }\n";
+	      action += "{ $$ = $2.add($1); }";
 	    }
 	  }
 	}
+	red_act += " " + action + "\n";
+	red_acts[redstring] = action;
       }
       red_act += "        ;\n";
       cout << red_act << endl;
@@ -693,23 +715,29 @@ choose_option:
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";
 	}
-	if (chosen_reds.find(i) == chosen_reds.end()) red_act += " { throw \"not implemented " + nt + "\"; } \n";
+	if (chosen_reds.find(i) == chosen_reds.end()) {
+	  string action = "{ throw \"not implemented " + nt + "\"; }";
+	  red_act += " " + action + "\n";
+	  red_acts[redstring] = "";
+	}
 	else {
-	  red_act += " { $$ = new S_" + nt + "(";
+	  string action = "{ $$ = new S_" + nt + "(";
 	  for (auto ntp: all_types) {
 	    int x = rule->reductions->reds[i]->findIdx(ntp);
 	    if (x == -1) {
-	      red_act += "NULL";
+	      action += "NULL";
 	    }
 	    else {
-	      red_act += "$" + to_string(x);
+	      action += "$" + to_string(x);
 	    }
 	    if (ntp != all_types[all_types.size()-1]) {
-	      red_act += ", ";
+	      action += ", ";
 	    }
 	  }
-	  red_act += "); }\n";
+	  action += "); }";
 	}
+	red_act += " " + action + "\n";
+	red_acts[redstring] = action;
       }
       red_act += "        ;\n";
       cout << red_act << endl;
@@ -744,7 +772,7 @@ choose_option:
       }
       remaining_nts.erase(nt);
       done_nts.insert(nt);
-      done_nt_features[nt] = {con_struct_ed, functions, red_act};
+      done_nt_features[nt] = {con_struct_ed, functions, red_act, red_acts};
     }
     else {
       cout << "discarding functions, continuing" << endl;
@@ -756,20 +784,6 @@ choose_option:
   ast_cpp << "#include \"ast.h\"\n\n";
   ast_header << "void print_tab(int tab);\n";
   ast_cpp << "void print_tab(int tab) {\n\tfor(int i = 0; i < tab; i ++) {\n\t\tcout << \"|\";\n\t}\n}\n";
-
-  
-  bison_file << "%union value {\n";
-  bison_file << "\tchar* strval;\n";
-  bison_file << "\tchar* intval;\n";
-  bison_file << "\tchar* floatval;\n";
-  for (auto& nt: done_nts) {
-    bison_file << "\tT_" + nt + " val_" + nt + ";\n";
-  }
-  bison_file << "};\n";
-  for (auto& nt: done_nts) {
-    bison_file << "%nterm <val_" + nt + "> " + nt + ";\n";
-  }
-  bison_file << endl;
   
   for (auto &[n_t, ntf]: done_nt_features) {
     ast_header << "struct S_" + n_t + ";\n";
@@ -782,7 +796,6 @@ choose_option:
     ast_cpp << ntf.functions;
   }
   
-  // bison_file << ntf.bison_actions;
   cout << "not done: " << endl;
   for (auto& [nt, rule]: non_terminals) {
     if (done_nts.find(nt) == done_nts.end()) {
@@ -804,14 +817,53 @@ choose_option:
     done_nt_features[nt] = {"", "", red_act};
     // bison_file << red_act;
   }
-
+  
+  bison_file << "%union value {\n";
+  bison_file << "\tchar* strval;\n";
+  bison_file << "\tint* intval;\n";
+  bison_file << "\tfloat* floatval;\n";
+  for (auto& nt: done_nts) {
+    bison_file << "\tT_" + nt + " val_" + nt + ";\n";
+  }
+  bison_file << "};\n";
+  
+  for (auto& nt: done_nts) {
+    bison_file << "%nterm <val_" + nt + "> " + nt + ";\n";
+  }
+  bison_file << endl;
+  
   vector<pair<int, string>> ordered;
   for (auto &[nt_s, nt_n]: nt_order) {
     ordered.push_back({nt_n, nt_s});
   }
   sort(ordered.begin(), ordered.end());
   for (auto &[nt_n, nt]: ordered) {
-    bison_file << done_nt_features[nt].bison_actions;
+    if (mergers.find(nt) == mergers.end()) {
+      bison_file << done_nt_features[nt].bison_actions;
+    }
+    else {
+      string to = mergers[nt];
+      auto &mp = done_nt_features[to].red_acts;
+      string red_act = nt + "\n";
+      for (int i = 0; i < merged_non_terminals[to]->reductions->reds.size(); i ++){
+	if (i == 0) red_act +=  "        : ";
+	else red_act += "        | ";
+	string repredstring = merged_non_terminals[to]->reductions->reds[i]->toStringReplaced(mergers);
+	if (mp.find(repredstring) == mp.end()) {
+	  throw "FFFF";
+	}
+	string action = mp[repredstring];
+	
+	string redstring = merged_non_terminals[to]->reductions->reds[i]->toString();
+	red_act += redstring;
+	for (int i = redstring.size(); i <= indent; i ++){
+	  red_act += " ";
+	}
+	red_act += " " + action + "\n";
+      }
+      red_act += "        ;\n\n";
+      bison_file << red_act;
+    }
   }
   bison_file << endl;
 }
