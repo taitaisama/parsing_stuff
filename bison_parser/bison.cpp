@@ -354,9 +354,12 @@ choose_option:
 	  red_acts[redstring] = "";
 	}
 	else {
+	  map<string, int> donnums;
 	  string action = "{ $$ = new S_" + nt + "(";
 	  for (auto ntp: all_types) {
-	    int x = rule->reductions->reds[i]->findIdx(ntp);
+	    int x = rule->reductions->reds[i]->findIdx(ntp, donnums[ntp]);
+	    if (donnums.find(ntp) == donnums.end()) donnums[ntp] = 0;
+	    donnums[ntp]++;
 	    if (x == -1) {
 	      action += "NULL, ";
 	    }
@@ -527,21 +530,24 @@ choose_option:
 	  red_acts[redstring] = "";
 	}
 	else {
+	  map<string, int> donnums;
 	  string action = "{ $$ = new S_" + nt + "(";
 	  auto & vei = constructor_map[rule->reductions->reds[i]->non_terminals_values];
 	  for (int k = 0; k < rule->reductions->reds[i]->non_terminals_values.size(); k ++) {
 	    auto ntp = rule->reductions->reds[i]->non_terminals_values[k];
-	    int x = rule->reductions->reds[i]->findIdx(ntp);
+	    int x = rule->reductions->reds[i]->findIdx(ntp, donnums[ntp]);
 	    action += "$" + to_string(x);
+	    if (donnums.find(ntp) == donnums.end()) donnums[ntp] = 0;
+	    donnums[ntp]++;
 	    if (k != rule->reductions->reds[i]->non_terminals_values.size()-1){
 	      action += ", ";
 	    }
 	  }
 	  if (vei.size() > 1) {
 	    if (rule->reductions->reds[i]->non_terminals_values.size() == 0)
-	      action += to_string(i) + "); }\n";
+	      action += to_string(i) + "); }";
 	    else
-	      action += ", " + to_string(i) + "); }\n";
+	      action += ", " + to_string(i) + "); }";
 	  }
 	  else
 	    action += "); }";
@@ -722,9 +728,12 @@ choose_option:
 	  red_acts[redstring] = "";
 	}
 	else {
+	  map<string, int> donnums;
 	  string action = "{ $$ = new S_" + nt + "(";
 	  for (auto ntp: all_types) {
-	    int x = rule->reductions->reds[i]->findIdx(ntp);
+	    int x = rule->reductions->reds[i]->findIdx(ntp, donnums[ntp]);
+	    if (donnums.find(ntp) == donnums.end()) donnums[ntp] = 0;
+	    donnums[ntp]++;
 	    if (x == -1) {
 	      action += "NULL";
 	    }
@@ -828,8 +837,11 @@ choose_option:
   }
   bison_file << "};\n";
   
-  for (auto& nt: done_nts) {
-    bison_file << "%nterm <val_" + nt + "> " + nt + ";\n";
+  for (auto& [nt, tr]: merged_non_terminals) {
+    if (mergers.find(nt) == mergers.end()) 
+      bison_file << "%nterm <val_" + nt + "> " + nt + ";\n";
+    else
+      bison_file << "%nterm <val_" + mergers[nt] + "> " + nt + ";\n";
   }
   bison_file << endl;
   
@@ -845,17 +857,29 @@ choose_option:
     else {
       string to = mergers[nt];
       auto &mp = done_nt_features[to].red_acts;
+      for (auto &[a, b]: mp) {
+	cout << a << ": " << b << endl;
+      }
       string red_act = nt + "\n";
-      for (int i = 0; i < merged_non_terminals[to]->reductions->reds.size(); i ++){
+      for (int i = 0; i < merged_non_terminals[nt]->reductions->reds.size(); i ++){
 	if (i == 0) red_act +=  "        : ";
 	else red_act += "        | ";
-	string repredstring = merged_non_terminals[to]->reductions->reds[i]->toStringReplaced(mergers);
+	string repredstring = merged_non_terminals[nt]->reductions->reds[i]->toStringReplaced(mergers);
+	string action;
 	if (mp.find(repredstring) == mp.end()) {
-	  throw "FFFF";
+	  if (repredstring == mergers[nt] + " ") {
+	    action = "{ }";
+	  }
+	  else {
+	    cout << repredstring << endl <<  mergers[nt] << endl;
+	    cout << merged_non_terminals[nt]->reductions->reds[i]->toString() << endl;
+	    throw "FFFF";
+	  }
 	}
-	string action = mp[repredstring];
+	else 
+	  action = mp[repredstring];
 	
-	string redstring = merged_non_terminals[to]->reductions->reds[i]->toString();
+	string redstring = merged_non_terminals[nt]->reductions->reds[i]->toString();
 	red_act += redstring;
 	for (int i = redstring.size(); i <= indent; i ++){
 	  red_act += " ";

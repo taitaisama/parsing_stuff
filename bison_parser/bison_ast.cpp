@@ -22,10 +22,13 @@ void S_reduction::add (string str){
   }
 }
 
-int S_reduction::findIdx (string nt) {
+int S_reduction::findIdx (string nt, int n) {
   for (int i = 0; i < non_terminals_values.size(); i ++){
     if (non_terminals_values[i] == nt) {
-      return non_terminal_pos[i];
+      if (n == 0)
+	return non_terminal_pos[i];
+      else
+	n--;
     }
   }
   return -1;

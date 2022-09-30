@@ -23,7 +23,7 @@ struct S_reduction {
   void print_pretty();
   string toString();
   string toStringReplaced(map<string, string> &mp);
-  int findIdx (string nt);
+  int findIdx (string nt, int n);
   T_reduction dup();
   void exchange (string ct, set<string> &cf);
 };
