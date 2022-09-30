@@ -11,3 +11,5 @@ You can merge multiple non\_terminals into one AST node in the first part. This 
 After this the interface will switch to generation of code for each AST node. There are 4 basic types of structures I have defined, one for when there is only one production (n), one for when there are multiple productions but you dont require an enum to distinguish between them (m), one for when you have multiple productions and you want an enum is your node (e) and one for defining union type nodes (u). Sometimes you might have to slightly change the output to get the desired results. 
 
 I have an example input to the program given in inputs.txt, you can just copy past it into the interative part of the program in the terminal if you want to generate ast.h, ast.cpp and reductions.y. These will be very similar to the files I have submitted, albiet with some minor changes. 
+
+This program was made by first making a parser for bison grammers and then working on the AST generated from that. 
